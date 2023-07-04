@@ -1,0 +1,28 @@
+# Setting up R and Rstudio
+
+The objective of this course is to provide a practical dimension as a complement to the introductory course on quantitative methods by learning programming. To use these statistical methods, you will learn to code in a programming language called R and through a software called Rstudio. To get the first session off to a good start and avoid wasting too much time setting up, you will need to bring a laptop with R and Rstudio installed. This short tutorial explains how to do it. If you have any issues to install these programs correctly, **please contact me before the first class**.
+
+R and Rstudio are two different things. R is both a programming language and a software program for coding. However, Rstudio is a much more functional interface, and that's what we're going to use it for. However, you must first install R to be able to run Rstudio.
+
+## Install R
+
+You can install R from [CRAN](https://cloud.r-project.org/) (The comprehensive R Archive Network). On the site, you'll find links to download the version of R you need for your operating system (Windows, Mac or Linux). Then click to download the latest version (it should be 4.3.1) . Once the download is complete, you need to execute the installer.
+
+![](00_getting_started/image/download_r) Is if has work, perfect. You should know that you can work with this but almost nobody use only R to perform analysis.
+
+## Install Rstudio
+
+Once R is set up, you can install Rstudio. Rstudio is an IDE, you can interact with and have a lot a functionalities.
+
+https://posit.co/download/rstudio-desktop/
+
+Once this is done, you can install Rstudio.
+
+
+You might find more information in this tutorial : https://rstudio-education.github.io/hopr/starting.html
+
+## Set preferences
+
+- Save workspace to never
+
+- https://speakerdeck.com/jennybc/how-to-name-files

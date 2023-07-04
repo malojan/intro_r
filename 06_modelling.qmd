@@ -1,0 +1,80 @@
+---
+title: "06_multi"
+editor_options: 
+  chunk_output_type: console
+---
+
+Never do linear regression with only one variable but multiple. What we call multivariate analysis because the interest of a regression is that we want to control for the other independent variables that can explain the variance of our dependent variable. This is what we call, everything else constant or ceteris paribus. To do multivariate regression, we can add variable in our lm function with +.
+
+## PLotting the coefficeints
+
+When we have different variables : useful to plot the different coefficients.
+
+-   You can extract the outputs of model with broom and use them to plot the results
+-   Interpretation for cateforical : do not forget refernce
+
+Different packages can also do this more automatically for you and you can have a look on
+
+-   ggcoeff du package ggstats
+-   broom helpers marginal predictions
+
+## Model diagnostics
+
+Once we've fit our model, however, we need to perform several diagnostics to see if the specification is right and if we're not breaking various underlying assumptions we make about the data when we use regression. Here, we use the `performance` package to check different of these assumptions.
+
+### Multicolinearity
+
+
+-   Check how our predictors are correlated : because if there are correlated, part of their variance capture the same phenomenon
+-   Measuring variance inflation factor VIF : measure how a predictor is independent of each other : you can do this with the `vif()` function from the `car` package.
+-   SE could increase due to correlation with other terms
+-   Vif should be below ten
+-   Measure of tolerance is 1/VIF
+-   One way to deal with this = PCA
+-   McElreath 2020 : p.169 : not pairwise correlation the problem but condition association (what does this means ? )
+
+One way in R to check for multicolinearity is from the `check_collinearity()` function from the `performance` package (equivalent to the `car::vif` function). The functions calculate the VIF, give confiance interval and calculte tolerance.
+
+-   VIF less than 5 : low correlation between 1 predictor and the others
+
+-   VIF more than 10 is high/not tolerable
+
+
+
+```{r}
+performance::check_collinearity(model)
+```
+
+### Is colinearity a real problem ? 
+
+If it's useful to check for collinearity, be aware that the extent to which this is an important issue is open to debate. Here are some ressources that you could visit if you want to know more about this debate : 
+
+https://statisticalhorizons.com/multicollinearity/ :  Paul Allison
+
+https://janhove.github.io/analysis/2019/09/11/collinearity, 
+- McElreath, R. (2020). Statistical rethinking: A Bayesian course with examples in R and Stan. 2nd edition. Chapman and Hall/CRC.
+
+## Heteroscedatiscity
+
+-   Variance of errors is not constant, affect estimation of SE and p-values
+-   PLot fitted vs residuals
+-   performance package allow also to run a Breush_agan test doing an hypothesis of non constant error.
+-   With the see package : plot can be done
+
+```{r}
+
+x <- performance::check_heteroscedasticity(model) 
+
+plot(x)
+
+```
+
+-   Statistical test with ncv test from the car package. if the p-values is smaller than 0.5, we fail to reject the hypothesis of constant variance and so model heteroscedatstic
+-   Solution : calculate robust standard errors, can be done with Rcurl or sandwich package and coeftest function : coeff same but se differents
+
+## Outliers
+
+```{r}
+performance::check_outliers(model)
+performance::check_model(model)
+```

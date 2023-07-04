@@ -1,0 +1,162 @@
+---
+title: "Manipulating data"
+editor_options: 
+  chunk_output_type: console
+---
+
+At this point, you are now able to import a data file into Rstudio and quickly explore the structure of the dataset, which is usually the first step in any analysis. If the dataset is well-structured, we then need to carry out a very important operation, which we'll see how to do in R: manipulate the data to obtain the information we want. In many cases, we're not interested in the whole dataset; we want to select specific variables, analyze only certain groups and see how these variables vary according to these groups. 
+
+With R, there are several ways to perform these operations.  Firstly, you can use R's basic functions, without having to load a specific package. An alternative approach is based on the tidyverse, a package suite developed by [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham) with a special syntax. Here, we'll concentrate on the tidyverse functions, which I feel are easier and more intuitive to use. 
+
+The tidyverse relies extensively on what is called "the pipe" : `>`. Depending on the version of R, you might also have this one `%>%`. There are a few differences between the two but at this stage, not really important. 
+
+Or you can use what is called the pipe
+
+
+## Introduction to dplyr functions
+
+In particular, the tidyverse contains a package called dplyr, which consists of a whole suite of functions highly useful for manipulating a dataset. To explore the benefits of these functions, we'll continue to use data from the Quality of Government Environmental indicators dataset. 
+
+```{r}
+library(tidyverse) # Load the tidyverse
+
+# download.file("https://www.qogdata.pol.gu.se/data/qog_ei_sept21.dta", destfile = "data/qog_env.dta")
+
+qog <- haven::read_dta("data/qog_env.dta") # Import the qog environment dataset
+```
+
+### `count()`
+
+From Exercise 1, we saw that the qog dataset has a country-year structure. For each country, we have a series of indicators with one value per year.
+
+```{r}
+qog |> 
+  count(year)
+
+qog |> 
+  count(year, cname)
+```
+
+### Filter
+
+We may want to use only a subset of countries and get a smaller versions of the dataset. And the tiverse has one for this, which is called filter. We want to select specific rows/observations of the dataset
+
+```{r}
+qog |> 
+  filter(cname == "France")
+```
+
+You could also filter by all of the countries that are NOT France
+
+```{r}
+qog |> 
+  filter(cname != "France")
+```
+
+Or you would try with different countries
+
+```{r}
+qog_subset <- qog |>
+  filter(
+    cname %in% c(
+      "France",
+      "Norway",
+      "Spain",
+      "Denmark"))
+```
+
+But we also want to store the data to manipulate it and so it is easier to create an object
+
+-   introduce boolean at the same time
+
+[](https://d33wubrfki0l68.cloudfront.net/01f4b6d39d2be8269740a3ad7946faa79f7243cf/8369a/diagrams/transform-logical.png)
+
+
+```{r}
+qog_subset <- qog |>
+  filter(
+    cname %in% c(
+      "France",
+      "Norway",
+      "Spain",
+      "Denmark",
+      "Netherlands",
+      "Poland",
+      "Russia",
+      "Saudi Arabia",
+      "India"
+    ),
+    year > 1990
+  )
+
+qog_subset |> view()
+```
+
+## Select columns
+
+Now we want to select one or two variables we are interested in to do some analysis. The select function from the tidyverse is useful to select specifics variables/columns from our dataframe
+
+```{r}
+qog_co2 <- qog_subset |> 
+  select(cname, year,  wdi_co2)
+
+qog_co2
+```
+
+Here if you look at the dataframe, it irs order by country and they year, but we could want to see how it changes by country each year easily by arranging our dataframe.
+
+Here we see that there are NA, because the dataset do not provide co2 per capita in 1946. We could remove these rows with NA
+
+See in our environment pane how it changes
+
+## Group_by and summarize
+
+```{r}
+qog_co2 |> 
+  group_by(cname) |> 
+  summarise(mean_co2 = mean(wdi_co2))
+```
+
+Does not work, why ? Because we have some NA and the mean do not understand so you have to change
+
+```{r}
+
+qog_co2 |> 
+  group_by(cname) |> 
+  summarise(mean_co2 = mean(wdi_co2, na.rm = T))
+
+qog_co2 |> 
+  group_by(cname) |> 
+  summarise(mean_co2 = mean(wdi_co2, na.rm = T)) |> 
+  arrange(desc(mean_co2))
+```
+
+Here we see that on average, the Saudi Arabia, Russia have the highest on the period.
+
+We would also wonder which year the emission have been the highest
+
+```{r}
+qog_co2 |> 
+  group_by(year) |> 
+  summarise(mean_co2 = mean(wdi_co2, na.rm = T)) |> 
+  arrange(desc(mean_co2)) 
+```
+
+
+# Mutate
+
+# Slice/Slice_max
+
+# Rename
+
+# Lag
+
+Once we have imported our data, we usually have descriptive sumamry of what it looks like. There are many ways to do that.
+
+If you want a summary of all variables, you can test what the skimr function can do. You wan transform it as tibble to have a dataset with different things.
+
+## Exercise
+
+
+
+

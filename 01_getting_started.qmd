@@ -1,0 +1,377 @@
+# Introduction
+
+## Goals of the class
+
+-   Giving you the will to continue and to apply
+-   Even if you are a more qualitative person ; you could want to collect data on websites, do some descriptive statistics to contextualize your interviews and so on.
+-   Study variations and relationship with statistics
+-   Learning skills that will be really valuable on the job market (academia, industry, public administration) : many position that requires getting data, sumamrizing it and analyzing it.
+
+This class requires no experience in programming and it is for complete beginners to accompany you to use R. Some of you might have already learnt it and you will be faster than the others, do not hesitate if you want extra.
+
+## Evaluation
+
+-   A small exercice : you need to practice and try
+-   Group project
+
+## Why programming and why R
+
+To analyze quantitative data, we need a computer to help us to do some tasks such as accessing, manipulating data, vizualizing it and modelling it. To ask our computer to do it, we usaully rely on a software and there are of different kind in the market. You probably all know excel or you would have heard of STATA, SPSS or SAS. However, the trend is to use R and has becoming more and more popular.
+
+-   Most important tools : other programming languages like Python. But R : wonderful langague, really excited to introducign to you
+
+-   It s free : built by a community of people, people adapt the language to new tools
+
+You might be thinking, "I've already learned Excel and can perform some data analysis tasks with it. Why should I bother learning to code in a seemingly complex language?"
+
+However, this has the disadvantage of having less comprehensive documentation compared to other languages like STATA.
+
+-   Why to learn how program ? What is it by the way ?
+-   Importance of reproducibility, replication crisis
+
+
+[](https://scontent-cdg4-1.xx.fbcdn.net/v/t1.6435-9/56536171_2318770995033884_4492027486531485696_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=730e14&_nc_ohc=C0-r7icq1p0AX8bCM1S&_nc_ht=scontent-cdg4-1.xx&oh=00_AfBn5zx_B1GOPSlYxg5JnXzNi6EnhzeUDg9DCoiVpVaEQQ&oe=64CB6F89)
+
+Nowadays, if you want to publish in a journal using quantitative data, almost all of them will ask your for your replication code.
+
+Regarding your future career, there are also a lot of incentives to learn R : 1. Jobs 2. Publishing : - Replicate, give track on what you have done.
+
+In you want to continue in academia, quantitative skills and programming are highly valuable and pre-requisite for many positions. Journals also more and more ask for replications code when you want to publish an article in order that the other could replicate your findings. In political science, R is more and more the dominant language.
+
+Furthermore, and I want to insist on that, even if you think you are mostly a qualitative researcher, learning how to programm might be useful. You need to distinguish between data collection and data analysis. For instance, you might want to do qualitative interview with people or studying documents and archives but then developing a textual analysis of your interview to discover some patterns. You might also want to analysis qualitatively a lot of documents/text/reports but getting them from internet in the good format might be tedious and programming might be helpful for this : you might want to archive data, to download directly from the internet.
+
+Even if you want to pursue a career in an other sector, "data science" skills are also really valuable.
+
+## Why R and Rstudio ?
+
+Why learn R ? Why should we bother.
+
+-   Specialized in statistics
+-   Free and open source, large community
+-   But high learning curve : learning R is quite difficult at the begining. And the best thing to do to learn it is to have a goal.
+
+To start this course and programming, you need several things
+
+## How Rstudio is organized
+
+RStudio is an integrated development environment (IDE) for R. It provides a user-friendly interface for working with R, and includes features such as a code editor, a console for executing R code, a data viewer, and tools for debugging and profiling R code. RStudio also supports the creation of interactive documents and web applications using Quarto or RMarkdown, which allows users to combine code, text, and graphics into a single document.
+
+- Script/open files : might be a presentation, a website, a R script, a Quarto document and so on. Code windows, things we want to save and re-run later. SAVE AS script. MAC should be at the Home directory.
+
+- Console : where the output of your code will appear
+- Environment : all of the objects we have saved in Rstudio. lean new objects, assignments. 
+- Working directory : place in our computer where R will read ans save file, usually default, but this is really important, it is where your files leave in your computer
+
+
+
+
+-   What is a working directory : where is my file living on my computer
+-   
+
+
+
+## R "projects" and path
+
+-   Path, set working directory
+
+-   R projects
+
+-   How your computer is organized.
+
+-   Recommend do not save your workspace
+
+## Packages and libraries
+
+-   What is a package
+-   Calling a package
+
+
+## Quarto, markdown and plain text
+
+I already told you about replication and eveyrhing. Rstudio allows you to combine text and code in the same documents. I will try to introduce you to these tools because there are really nice to write.
+
+-   Script : way to write down code, you do not have to write everything again next time
+
+
+### Basic code
+
+-   Do some vocab definitions ? What is a function ? What is a vector ?
+
+-   Objects and assignments in R \<- However, we use scripts in R
+
+
+-   What is a function, what is an argument
+
+-   Learn how to use a script to compute different things
+
+We will work with the code editor, you can write script. 
+
+
+First, R can be used as a calculator to perform different operations. 
+
+```{r}
+2*3
+2/6
+
+
+```
+
+
+## Vectors
+
+In R, most of the things we manipulate are vectors, which are sequences of different values on which we can perform operations. These vectors can be of different types (eg : vectors of numbers, vectors of strings) but have to be of the same type (atomic vectors). You would also store elements of different values in lists. Vectors have a type (typof) and a length. 
+
+We can generate vectors with c(). 
+
+
+-   How things work in R : vectors, strings and so on
+
+-   What is an object, what is the environment
+
+
+Notice that I have write this with an underscore : no space.
+
+vectors : sequences of things, we can create them with c(), list of values, there are unidimensionals, have only one type
+
+```{r}
+first_object <- 2
+
+first_object + 4
+
+```
+Objects with assignment operator \<-, we give a value to an object. Also boolean. There are conventions on how you should write objects names : you can visit this here : https://style.tidyverse.org/syntax.html#object-names
+
+
+```{r}
+3 > 5
+```
+
+
+### Characters vectors
+
+
+```{r}
+this_is_a_vector <- c("a", "vector")
+```
+
+strings and numerics
+
+Goal to have vectors is to do operations on them.
+
+```{r}
+hey <- c(1, 2, 3)
+sum(hey)
+mean(this_is_a_vector) # This is an error
+```
+
+HEre we get warning messages
+
+When you write code, you want to annotate your code for the others to understand or you future you. You wan use the \# and say : this is a comment. You can try to run this and you wont have anything.
+
+How to index vectors : get a specific value
+
+-   Base R and the tidyverse
+
+vector are sequences of things
+
+### Indexation
+
+You can access specific elements of vectors by **indexing**, which is performed by using square brackets `[]`. 
+
+```{r}
+politicians <-c("Macron", "Schultz", "Biden", "Sanchez", "Meloni")
+
+politicians[3]
+politicians[-3]
+politicians[c(1,5)]
+politicians[1:3]
+politicians[politicians == "Macron"]
+
+```
+
+
+### Attributes
+
+R objects have attributes
+
+```{r}
+class("a cat")
+class(1)
+
+"a cat" |> attr("class")
+```
+
+## Base R and the tidyverse
+
+-   The tidyverse is easier, but I will often try to show use how to things in base R because it always could be useful.
+-   Use the Pipe \|\> to chain command, thing about a recipe : you follow instructions. When you install it, you will have weird messages but you can ignore them.
+
+### Dataframes and tibbles
+
+We usually do not work directly with vectors but with dataframes. dataframes are combinations of vectors
+
+tibbles gives you more concise information when you print it, linked with tidyverse functions, "improved" dataframes. Tibbles only can contain vectors of the same type and the same lgenth
+
+```{r}
+# This is a dataframe
+names <- randomNames::randomNames(5, which.names="first")
+
+gender <- gender::gender(names)
+gender
+names
+
+```
+
+```{r}
+my_data <- tibble::tibble(
+  name = names, # Names
+  master = c("Political Behaviour", "Public Policy", "General Track", "IR", "Comparative Politics"), # Track
+  gender = c("M", "F", "M", "F", "M"), # Gender
+  mean = c(10.5, 4, 13, 15, 7) # Mean
+)
+
+my_data
+```
+
+You see now that we have a new object in our Environment Pane with 3 observations and 4 variables.
+
+To access one variable of a dataframe, we use the \$ sign.
+
+also List : can have different type of things but we wont go further on this at the moment.
+
+Indexation : you can access some of the data like this :
+
+```{r}
+my_data$name[1]
+```
+
+```{r}
+my_data$name
+```
+
+```{r}
+my_data$name[[1]]
+```
+
+```{r}
+my_data[[1]]
+```
+
+```{r}
+head(my_data)
+tail(my_data)
+dplyr::glimpse(my_data)
+colnames(my_data)
+dim(my_data)
+nrow(my_data)
+summary(my_data)
+```
+
+No correct way to do stuffs in R, you can do the same things in very different ways : learning how to learn. You cannot remember anything. We do google search all the time. But you need some patience.
+
+Install Packages
+
+that you need to load with library.
+
+## Importing data
+
+### Get data
+
+Last time we tried to get a sense of what R can do with basic arithmetics but usually we are interested in working with real data. Our goal with R is to use programming to produce analysis of quantitative data. Then the first thing you need is to get that data somewhere, either collect if through a survey, or build a dataset yourself by coding some informations about the individuals or organizations you are interested in. But there are also many many many datasets already available around there that people (administrations, researchers, ngos, companies, international organization and so on) have already created and made available. At this stage, I will give you already-made datasets on which you can work, but you should know that with R, you can collect data directly from the internet : this is called web scraping (you can learn that later on if you continue to)
+
+So far, I showed you basic use of R with fake data. But our goal with R is to use programming to produce analysis of quantitative real data to answer social sciences research questions. Then, the first thing you need is to get data. There are a lot of data around us such as :
+
+-   Surveys : ex : measuring people attitudes
+-   Text
+-   Image
+-   Country characteristics, institutions
+-   Datasets that other researches have produced
+-   Datasets that administration, parliaments etc
+
+You could also consider producing your own datasets through :
+
+-   Producing your own survey (but you need money)
+-   Scraping
+-   Hand-coding
+
+### Read data into R
+
+The first thing we have to do when working with data in importing data into R. This step is crucial, make looks simple but sometimes is not and because datasets comes in very different format. The most common is .csv (for comma separated values), butin political science, you will find also a lot of stata (.dta) or spss (.sav) files. In base R, you can use the `read.csv()` function to import csv file.
+
+To import data here, we will use the `readr` package, that is part of the `tidyverse`.
+
+-   read_r : read_csv, read_csv2
+-   Importance of paths
+
+### Write data
+
+Once you have done something, that you want to share it or hand it to me for your assignment, you
+
+## Finding help and dealing with errors
+
+Programming might be very frustrating because when you learn a new language, you make many mistakes. But R is very strict on what it will accept. So when you want to do something but that you do not ask properly, you will have errors. And finding and understanding the causes of these errors is, in my experience, the best way to learn R.
+
+There are different places where you can ask for help when you need. First, you have to understand that the error you will get, many people have got it before you and some of them have asked online. So the first thing to do is to check whether people have already asked the same kind of questions.
+
+First, every function has a documentation written by the person who created it. You can access this documentation directly from Rstudio by adding a question mark in front of the function name and running this line of code. This will give you a description of the function and its use, the different arguments the function can take and examples of its use.
+
+```{r}
+?read_csv
+```
+
+Then you can also just google the error messages you've received. Most of the time you'll come across a blog called [Stackoverflow](https://stackoverflow.com/) , which brings together a community of users of different programming languages. If R gives you an error and you don't understand what it means, it's highly likely that someone has already asked the question, and you can find on the site people who have provided solutions.
+
+Finally, when you're writing code, ChatGpt can quickly become one of your best friends. By giving it your error or asking it for instructions to perform certain code tasks, it can perform very well. I encourage you to use it when writing code. Beware, however, that ChatGPT can totally hallucinate and give you functions that don't exist. It's not a miracle solution. However, you'll find out pretty quickly if what it's given you is true, because if it isn't, the code won't work in R.
+
+## Exercise 1
+
+1.  Create an R project on your computer in the location and with the name you want (avoid white spaces). This should create a new folder containing an Rproj file.
+
+2.  Create a quarto document with the title "Exercise 1" and your name as author. Save the file as ("lastname_ex1.qmd") and save it in the same folder.
+
+3.  Add a chunk code and print out your working directory to make sure your R session is launched in the project you've created. The last part of the path displayed should correspond to the project name.
+
+4.  Add a new chunk code and find a way to import the Quality of Government environmental indicators dataset into Rstudio, either in `.dta` format (stata) or `.sav` format (spss).
+
+5.  Once the data has been imported, answer the following questions with both code and writing on the quarto document:
+
+-   What is this dataset about ?
+-   What is the unit of analysis for this dataset ?
+-   Find a way to calculate the mean of the variable wdi_fossil and write a sentence to interpret the result.
+
+6.  Render the quarto document in a pdf format and upload your file on moodle.
+
+## Solution to exercise 1
+
+3.  Print your working directory
+
+First, you had to print your working directory. To do this in quarto, you have to add a new cunk code, which you can do by option + command + i in MAC or ... in Windocs. You can also click on code and 'Insert Chunk' in the functions bar.
+
+```{r}
+getwd() 
+here::here() 
+```
+
+The `haven` package allows you to read both files from Stata or from SPSS with either `read_dta()` or `read_sav()`. Here I've copied the address of the pdf link on the site and read the file directly from the Internet. I could also have downloaded the file and saved it in the same folder as my project to import it, specifying the file name as the first argument to the `read_dta` function.
+
+```{r}
+qog <- haven::read_dta("https://www.qogdata.pol.gu.se/data/qog_ei_sept21.dta")
+```
+
+```{r}
+qog |> head(10) # Look at the first 10 rows
+qog |> tail(5) # Look at the last 5 rows
+dplyr::glimpse(qog)
+```
+
+Or we can have a look at the codebook which we can download with the data that gives us a description of every variable in the dataset.
+
+```{r}
+summary(qog$wdi_fossil)
+mean(qog$wdi_fossil)
+mean(qog$wdi_fossil, na.rm = TRUE)
+```
+
+### Additional ressources
+
+-   The reader [cheatsheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-import.pdf)

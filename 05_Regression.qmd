@@ -1,0 +1,316 @@
+---
+title: "Regression"
+editor_options: 
+  chunk_output_type: console
+---
+
+## Diving into OLS regression 
+
+
+-   OLS stands for Ordinary Least Square
+
+-   Formula
+
+-   OLS is a certain kind of method of linear model in which we choose the line which has the least prediction errors. This means that it is the best way to fit a line through all the residuals with the least errors. It minimizes the sum of the squared predicition errors
+
+-   Usually assess the effect of X (a independent variable) on Y (dependent variable) : what is the relationship between the two ? Is we assume that this relationship is linear, then, regression.
+
+-   We use OLS when our dependent variable is continuous !!! If not, we have to use other kind of models that you will discover during the next semester. The most knows is called logistic regression that we use when our dependent variable is binary. For instance : voting for Marine Le Pen in the second round in the last presidential election in France. You either have voted for her or not.
+
+-   Intercept : tells us what is the level of Y when X is 0
+
+-   Betas : slope : our coefficient that we want to estimate. this is what we are interested to know in a regression : is how much does Y changes when we change X. It tells us how much Y change on average when X changes by one-unit.
+
+-   Error term
+
+# How to do a regression in R
+
+You have heard about regression in your statistic class and now we will see how to do it in R. It is really easy. During the next semester, you will learn to do more sophisticated models.
+
+You do not need
+
+-   lm(), which comes from the stats package that you do not need to load beacause it is already in base R.
+
+```{r}
+pacman::p_load(
+  tidyverse,
+  broom,
+  stargazer,
+  tidymodels
+)
+```
+
+-   Import a dataset
+
+```{r}
+pr2022 <- openxlsx::read.xlsx("https://www.data.gouv.fr/fr/datasets/r/6d9b33e5-667d-4c3e-9a0b-5fdf5baac708")
+
+pr_long <- pr2022 |> 
+  janitor::clean_names() |> 
+  mutate_all(as.character) |> 
+  pivot_longer(20:ncol(pr2022))
+  
+pr_wide <- pr_long |> 
+    mutate(number = rep(seq(1, 7), length.out = nrow(pr_long)) |> as.character(), 
+           number = case_match(
+               number,
+               "1"  ~ "n_panneau",
+               "2"  ~ "sexe",
+               "3"  ~ "nom",
+               "4"  ~ "prenom",
+               "5"  ~ "voix",
+               "6"  ~ "percent_voix_ins",
+               "7"  ~ "percent_voix_exp"
+           )) |> 
+    select(- name) |> 
+    pivot_wider(names_from = number, values_from = value) |> 
+    unnest()
+
+pr_wide |> slice_head(n = 100) |> view()
+
+
+pr2022 <- pr_wide |> 
+    mutate(code_du_departement = case_when(
+        str_length(code_du_departement) == 1 ~ paste0("0", code_du_departement),
+        TRUE ~ as.character(code_du_departement)
+    ), 
+    code_de_la_commune = case_when(
+        str_length(code_de_la_commune) == 2 ~paste0("0", code_de_la_commune),
+        str_length(code_de_la_commune) == 1 ~paste0("00", code_de_la_commune),
+        TRUE ~ as.character(code_de_la_commune)
+            ), 
+    CODGEO = paste0(code_du_departement, code_de_la_commune)) 
+
+
+pop  <- readxl::read_excel("data/base-cc-evol-struct-pop-2019.xlsx", skip = 5)
+
+pop <- pop |> 
+    select(CODGEO, REG, DEP, LIBGEO, P19_POP, C19_POP15P, C19_POP15P_CS1, C19_POP15P_CS6) |> 
+    rename(population_nb = P19_POP,
+           population15_nb = C19_POP15P,
+           agri15_nb = C19_POP15P_CS1,
+           ouv15_nb = C19_POP15P_CS6) |> 
+    mutate(agri_share = agri15_nb/population15_nb*100,
+           ouvri_share = ouv15_nb/population15_nb*100)
+
+## Employment
+
+unemploy <-  readxl::read_excel("data/base-cc-emploi-pop-active-2019.xlsx", skip = 5)
+
+unemploy <- unemploy |> 
+    select(CODGEO, LIBGEO, P19_POP1564, P19_CHOMEUR1564) |> 
+    rename(pop1564 = P19_POP1564,
+           unemp1574_nb = P19_CHOMEUR1564) |> 
+    mutate(unemp_share = unemp1574_nb/pop1564*100)
+
+## Immigration data from recensement 2019
+
+immig  <- readxl::read_excel("data/BTX_TD_IMG1A_2019.xlsx", skip = 9)
+
+immig <- immig |> 
+    pivot_longer(cols = contains("IMMI")) |> 
+    mutate(name = case_when(
+        str_detect(name, "IMMI1") ~ "Immigrés",
+        str_detect(name, "IMMI2")  ~ "Non-immigrés"
+    )) |> 
+    group_by(CODGEO, LIBGEO, name) |> 
+    summarise(immig_nb = sum(value)) |> 
+    group_by(CODGEO, LIBGEO) |> 
+    mutate(immig_share = immig_nb/sum(immig_nb)*100) |> 
+    filter(name == "Immigrés")  |> 
+    select(- name)
+
+pop <- pop |> 
+    left_join(immig) |> 
+    left_join(unemploy)
+
+pr <- pr2022 |> left_join(pop) |> 
+  mutate(vote_share = as.numeric(percent_voix_exp), 
+         ouvri_share = as.numeric(ouvri_share))
+```
+
+Today, I will use a dataset on all the candidates at the french 2022 legislative election.
+
+
+```{r}
+pr_rn <- pr |> 
+  filter(nom == "LE PEN") 
+
+pr_rn |> ggplot(aes(vote_share)) + geom_histogram()
+pr_rn |> ggplot(aes(ouvri_share)) + geom_histogram()
+
+pr |> 
+  filter(nom %in% c("LE PEN")) |> 
+  ggplot(aes(ouvri_share, vote_share)) + 
+  geom_point(alpha = 0.02) + 
+  geom_smooth(method = "lm") +
+  theme_light() + 
+  geom_vline(xintercept = mean(pr$vote_share, na.rm = TRUE), lty = "dashed") +
+
+  facet_wrap(~ nom)
+
+pr_rn |> 
+  ggplot(aes(ouvri_share, vote_share)) + 
+  geom_point(alpha = 0.02) + 
+  geom_smooth(method = "lm") +
+  theme_light() + 
+  geom_vline(xintercept = mean(pr_rn$ouvri_share, na.rm = TRUE), lty = "dashed") +
+  geom_hline(yintercept = mean(pr_rn$vote_share, na.rm = TRUE), lty = "dashed") +
+  facet_wrap(~ nom)
+
+model <- lm(vote_share ~ ouvri_share, pr_rn)
+summary(model)
+
+ggplot(augment(model), aes(y = vote_share, x = ouvri_share)) +
+  geom_abline(intercept = coef(model)[1], slope = coef(model)[2], color = "blue") +
+  geom_segment(aes(xend = ouvri_share, yend = .fitted), color = "grey") +
+  geom_point(alpha = 0.4)
+
+ggplot(pr_rn, aes(y = vote_share, x = ouvri_share)) +
+  geom_point() +
+  geom_abline(intercept = coef(model)[1], slope = coef(model)[2], color = "blue")
+```
+
+
+
+
+
+```{r}
+candidates2022 <- read_csv("https://www.data.gouv.fr/fr/datasets/r/67d3987a-3f9d-464c-a678-116c25186f66") |> 
+  select()
+```
+
+
+```{r}
+candidates2017 <- openxlsx::read.xlsx("https://www.data.gouv.fr/fr/datasets/r/a3ce8a56-3e0f-46aa-8df9-17b7534a6d3d", sheet = 1) |> 
+  janitor::clean_names()
+```
+
+Issue with T1_EXP_VOTE variable : % that are not. Another option is to remove the strings with str_remove. Just to show you what is possible.
+
+```{r}
+candidates <- candidates |> 
+  rename(
+         incumbent = Candidat_sortant) |> 
+  mutate(score = T1_voix_candidat/T1_exprimes*100)
+```
+
+```{r}
+candidates |> 
+  janitor::tabyl(incumbent)
+
+# OUPS score is not numeric
+
+candidates |> 
+  ggplot(aes(score)) + geom_histogram()
+
+class(candidates$score)
+
+candidates <- candidates |> 
+  mutate(score = as.numeric(score))
+
+view(candidates)
+# Recode also the categories
+```
+
+-   Select variables of interest
+
+-   Line to minimize the distance between the
+
+```{r}
+ggplot(iris) +
+  aes(x = Petal.Length, y = Petal.Width) +
+  geom_point(colour = "blue", alpha = .25) +
+  geom_smooth(method = "lm") +
+  labs(x = "Longueur", y = "Largeur") +
+  theme_light()
+
+
+
+```
+
+-   Diff between categorical with reference and linear
+
+```{r}
+model <- lm(score ~ incumbent + Sexe_candidat + Age_candidat, candidates)
+```
+
+# Extract and interpret the results
+
+Once we have run the model, we first need to extract and interpret the results. In R, you have different ways to look at and to manipulate the results of a regression model. The first one is the `summary()` function.
+
+```{r}
+summary(model)
+```
+
+How we interpret a regression
+
+-   Model fit : R2 : amount of variation of Y that our model is able to explain : goes from 0 to 1. If R2 = 1, our model entirely explains Y (that will never happens). In social science we are happy with R2 of 0.2.
+
+-   Adjusted R2
+
+-   Residual standard error
+
+-   F2
+
+-   The `summary()` function
+
+An alternative way to see the results comes from the `broom` package (that you need to install and to load) that has super handy functions to get the results of the regression model in tidy format. That means that you can then easily use them to plot them.
+
+-   Or use the `broom` package that has super handy functions to deal with outpts, with three main functions : `tidy()`, `glance()` and `augment()`
+
+```{r}
+broom::tidy(model, conf.int = TRUE)
+broom::glance(model)
+
+ggeffects::ggpredict(model, terms = "incumbent") |> plot()
+ggeffects::ggpredict(model, terms = "Age_candidat") |> plot()
+
+broom::augment(model) |> 
+  ggplot() +
+  aes(x = score, y = Age_candidat) +
+  geom_point(colour = "blue", alpha = .25) +
+  geom_smooth(method = "lm") +
+  theme_light()
+
+```
+
+# Model diagnostics
+
+# ------------------------------------------------------------------------------
+
+# Step 5: further model diagnostics
+
+# ------------------------------------------------------------------------------
+
+# model performance, using the `performance` package
+
+```{r}
+performance::model_performance(model)
+```
+
+performance::compare_performance(M1, M2, metrics = "common")
+
+# diagnose possible model issues (equivalent to the `car::vif` function)
+
+performance::check_collinearity(M2) performance::check_heteroscedasticity(M2)
+
+Outliers
+
+performance::check_outliers(M2)
+
+# ... or, for even more diagnostics plots (requires installing extra packages)
+
+# install.packages(c("see", "patchwork"))
+
+performance::check_model(M2)
+
+# Beta coefficients
+
+# Interactions
+
+# To sum up, what you should learn
+
+-   How to do regression
+-   How to extract the output with `broom`
+-   How to display and `stargazer`
