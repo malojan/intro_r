@@ -4,36 +4,25 @@ editor_options:
   chunk_output_type: console
 ---
 
-Today we focus on bivariate relationships, we want to measure how 2 variables might be associated one with one another (give exemples of this). Be aware that here, we only talk about relationship but not causality : endogeneity, other variables that might influence a relationship. 
-
+Today we focus on bivariate relationships, we want to measure how 2 variables might be associated one with one another (give exemples of this). Be aware that here, we only talk about relationship but not causality : endogeneity, other variables that might influence a relationship.
 
 You can do this throught different ways
 
-- Corss-tabulations
-
+-   Corss-tabulations
 
 ## Testing the relationship between two categorial variables : χ² test
 
+You can use the `chisq.test()` function, taking the result of a `table()`.
 
-
-You can use the `chisq.test()` function, taking the result of a `table()`. 
-
-
-## Comparing means 
+## Comparing means
 
 ## Comparing two continous variables with correlations
 
-
-
-
-
-
 ## Linear regression
 
-- Linear relationship between a continuous variable (our dependent variable) and one or several independent variables. Linear relationship means that this relationship can be represented by a droite. 
+-   Linear relationship between a continuous variable (our dependent variable) and one or several independent variables. Linear relationship means that this relationship can be represented by a droite.
 
-In R, it is really easy to calculate a linear regression model. You need to use the `stats::lm()` function. You need to insert a formula with on the left, the variable you want to explain and the right, the independent variables and in between, a `~`. 
-
+In R, it is really easy to calculate a linear regression model. You need to use the `stats::lm()` function. You need to insert a formula with on the left, the variable you want to explain and the right, the independent variables and in between, a `~`.
 
 ## 
 
@@ -56,8 +45,6 @@ First, you have the coefficients. One is the coefficient associated with our ind
 ```{r}
 coef(model)
 ```
-
-
 
 ```{r}
 coef(model)

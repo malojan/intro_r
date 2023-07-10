@@ -18,11 +18,14 @@ https://posit.co/download/rstudio-desktop/
 
 Once this is done, you can install Rstudio.
 
-
 You might find more information in this tutorial : https://rstudio-education.github.io/hopr/starting.html
 
 ## Set preferences
 
-- Save workspace to never
+-   Save workspace to never
 
-- https://speakerdeck.com/jennybc/how-to-name-files
+-   https://speakerdeck.com/jennybc/how-to-name-files
+
+## Installing package
+
+To make sur everything works, try to install a package by typing "install.package("tidyverse)" inside the bottom left pane and click enter. It should take a moment. But if at the end no error, you are ready to go. If you have some errors, please write me an email.

@@ -4,18 +4,19 @@ editor_options:
   chunk_output_type: console
 ---
 
-At this point, you are now able to import a data file into Rstudio and quickly explore the structure of the dataset, which is usually the first step in any analysis. If the dataset is well-structured, we then need to carry out a very important operation, which we'll see how to do in R: manipulate the data to obtain the information we want. In many cases, we're not interested in the whole dataset; we want to select specific variables, analyze only certain groups and see how these variables vary according to these groups. 
+At this point, you are now able to import a data file into Rstudio and quickly explore the structure of the dataset, which is usually the first step in any analysis. If the dataset is well-structured, we then need to carry out a very important operation, which we'll see how to do in R: manipulate the data to obtain the information we want. In many cases, we're not interested in the whole dataset; we want to select specific variables, analyze only certain groups and see how these variables vary according to these groups.
 
-With R, there are several ways to perform these operations.  Firstly, you can use R's basic functions, without having to load a specific package. An alternative approach is based on the tidyverse, a package suite developed by [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham) with a special syntax. Here, we'll concentrate on the tidyverse functions, which I feel are easier and more intuitive to use. 
+With R, there are several ways to perform these operations. Firstly, you can use R's basic functions, without having to load a specific package. An alternative approach is based on the tidyverse, a package suite developed by [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham) with a special syntax. Here, we'll concentrate on the tidyverse functions, which I feel are easier and more intuitive to use.
 
-The tidyverse relies extensively on what is called "the pipe" : `>`. Depending on the version of R, you might also have this one `%>%`. There are a few differences between the two but at this stage, not really important. 
+-   Use the Pipe \|\> to chain command, thing about a recipe : you follow instructions. When you install it, you will have weird messages but you can ignore them.
+
+The tidyverse relies extensively on what is called "the pipe" : `>`. Depending on the version of R, you might also have this one `%>%`. There are a few differences between the two but at this stage, not really important.
 
 Or you can use what is called the pipe
 
-
 ## Introduction to dplyr functions
 
-In particular, the tidyverse contains a package called dplyr, which consists of a whole suite of functions highly useful for manipulating a dataset. To explore the benefits of these functions, we'll continue to use data from the Quality of Government Environmental indicators dataset. 
+In particular, the tidyverse contains a package called dplyr, which consists of a whole suite of functions highly useful for manipulating a dataset. To explore the benefits of these functions, we'll continue to use data from the Quality of Government Environmental indicators dataset.
 
 ```{r}
 library(tidyverse) # Load the tidyverse
@@ -68,9 +69,6 @@ qog_subset <- qog |>
 But we also want to store the data to manipulate it and so it is easier to create an object
 
 -   introduce boolean at the same time
-
-[](https://d33wubrfki0l68.cloudfront.net/01f4b6d39d2be8269740a3ad7946faa79f7243cf/8369a/diagrams/transform-logical.png)
-
 
 ```{r}
 qog_subset <- qog |>
@@ -142,7 +140,6 @@ qog_co2 |>
   arrange(desc(mean_co2)) 
 ```
 
-
 # Mutate
 
 # Slice/Slice_max
@@ -156,7 +153,3 @@ Once we have imported our data, we usually have descriptive sumamry of what it l
 If you want a summary of all variables, you can test what the skimr function can do. You wan transform it as tibble to have a dataset with different things.
 
 ## Exercise
-
-
-
-

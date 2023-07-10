@@ -1,42 +1,75 @@
-
 ```{css, echo = FALSE}
 .justify {
   text-align: justify !important
 }
 ```
 
-::: {.justify}
-
+::: justify
 # Data vizualisation
 
-In this session, you will learn how to create graphs. Data visualization serves two primary purposes: data exploration and communication. When we examine our data, a few graphs can provide valuable insights into its distribution and the characteristics of various variables. Additionally, when we analyze data and wish to convey our findings, graphs can be highly effective in conveying key information. This notion is captured by the phrase "A picture is worth a thousand words." Furthermore, aesthetics play a significant role, and we appreciate visually pleasing graphs. R is capable of producing exceptionally beautiful graphs, and once you learn how to create them, you may develop a strong dislike for those who rely on Excel graphs for the rest of your life.
+In this session, you will learn how to create graphs. Data visualization serves two primary purposes: data exploration and communication.
 
-There are several methods available for creating graphs in R. Base R provides functions such as `plot()`, `hist()` or `boxplot()` (you can also explore the `lattice` package). However, in this session, we will focus on a widely popular package called ggplot. It is a component of the tidyverse, so there is no need to install or load it separately if the tidyverse package is already loaded.
+1.  Exploration and description
 
-The "gg" in `ggplot` represents the "grammar of graphics." Graphs are constructed by adding various layers to a basic graph, allowing for progressively more complex modifications such as adjusting the title or adding annotations.
+When we examine our data, a few graphs can provide valuable insights into its distribution and the characteristics of various variables.
 
-To do a graph in `ggplot`, you need at least three things : a dataframe, aestethics and a geometry. 
+2.  Communication
+
+Additionally, when we analyze data and wish to convey our findings, graphs can be highly effective in conveying key information. This notion is captured by the phrase "A picture is worth a thousand words." - Valuable skills, communication : lot of jobs (datajournalists). Think about all of the graphs that florishs during the covid 19, https://ourworldindata.org/
+
+3.  Just because it is beautiful
+
+Furthermore, aesthetics play a significant role, and we appreciate visually pleasing graphs. R is capable of producing exceptionally beautiful graphs, and once you learn how to create them, you may develop a strong dislike for those who rely on Excel graphs for the rest of your life.
+
+## Bad viz
+
+-   Here details on what makes a good or bad vizualisation.
+
+-   http://albertocairo.com/
+
+-   https://visionscarto.net/hieroglyphes-isotype
+
+-   https://visionscarto.net/la-semiologie-graphique-a-50-ans
+
+-   Forget about pie charts : One of the first graph that comes in our mind when we think about data vizualisation are pie chart (or camemberts as we say in french). If you have already done that once in your life, I warn you that it will not happen again.
+
+-   
+
+    -   Do not use double axes
+
+-   According to briatte slides : use facets/use annotations
+
+If you want to learn more about graphs, I recommand you to read this and this. Healy, Winston Chang : different reasons why graphs might be bad or not (why is this not in the doc anymore, look back at healy, differentces between perception, information etc. )
+
+https://medium.com/@fneves/stop-using-those-ugly-pie-charts-962ac70beb41 https://www.data-to-viz.com/caveat/pie.html
+
+## The grammar of graphics
+
+There are three main [ploting systems](https://bookdown.org/rdpeng/exdata/plotting-systems.html) available for creating graphs in R. Base R provides functions such as `plot()`, `hist()` or `boxplot()` (you can also explore the `lattice` package). However, in this session, we will focus on a widely popular package called ggplot. It is a component of the tidyverse, so there is no need to install or load it separately if the tidyverse package is already loaded.
+
+The "gg" in `ggplot` represents the "grammar of graphics" [@wilkinson2012grammar]. Graphs are constructed by adding various layers to a basic graph, allowing for progressively more complex modifications such as adjusting the title or adding annotations.
+
+To do a graph in `ggplot`, you need at least three things : a dataframe, aestethics and a geometry.
 
 -   First the data : a dataframe, in a *tidy* format : observations as rows and variables as columns
 
 -   Aesthetics : axe des x, axe des y, couleur, forme des points, type de ligne
 
-You need to add `+` between each element :syntaxe additive et pas des pipes ! The geometry allows you to specify how you want to represent your data : `geom_point()`, `geom_line()`. 
+You need to add `+` between each element :syntaxe additive et pas des pipes ! The geometry allows you to specify how you want to represent your data : `geom_point()`, `geom_line()`.
 
-This might be quite abstract at this point but you will see how it works in a few minutes. But before to show you how to do graphs, just a few recommandations on what you should not do. According to Healy, graphs may be bad for three main reasons : aesthethic, substantive and perceptual. 
+Not always easy to decide which graph is best at representing the information we want. You can have a look on the [data to viz](https://www.data-to-viz.com/) website or the [R graph gallery](https://r-graph-gallery.com/) which can help you doing this.
 
-1. Forget about pie charts. 
+This might be quite abstract at this point but you will see how it works in a few minutes. But before to show you how to do graphs, just a few recommandations on what you should not do. According to Healy, graphs may be bad for three main reasons : aesthethic, substantive and perceptual.
 
-One of the first graph that comes in our mind when we think about data vizualisation are pie chart (or camemberts as we say in french). If you have already done that once in your life, I warn you that it will not happen again. 
+Different layes in ggplot :
 
-- Here details on what makes a good or bad vizualisation. 
-
-
-If you want to learn more about graphs, I recommand you to read this and this. Healy, Winston Chang
-
-
-https://medium.com/@fneves/stop-using-those-ugly-pie-charts-962ac70beb41
-https://www.data-to-viz.com/caveat/pie.html
+-   data
+-   aesthethics mapping
+-   geom
+-   facets
+-   statistics
+-   coordinates
+-   themes
 
 ## Exploring party politics with graphs
 
@@ -54,7 +87,7 @@ n_distinct(ches$year)
 n_distinct(ches$party_id)
 ```
 
-The dataset covers information on 424 different political parties, on 6 different waves and in 28 different countries. From the list of variables we can see that a few of them gives us variables on the year, the country, the party, its vote share and number of seats for a given wave and then a lot of variables on different issues. Broadly, we can distinguish between positions, salience, blurring and dissent. 
+The dataset covers information on 424 different political parties, on 6 different waves and in 28 different countries. From the list of variables we can see that a few of them gives us variables on the year, the country, the party, its vote share and number of seats for a given wave and then a lot of variables on different issues. Broadly, we can distinguish between positions, salience, blurring and dissent.
 
 For instance, I want to know how political parties in Europe care about russian interference in their country. There is a `russian_interference` in the CHES on this asking the salience of Russian interference in domestic affaires for the party leasdership : going from No importance to Great importance. The first think we would like to know is how this variable is distributed. To do this we could first calculate some descriptive statistics.
 
@@ -71,7 +104,7 @@ ches |> group_by(year) |>
 
 But we would have a better understanding on how the values are distributed with a vizualization. With this we know that most of the parties do not think it is important, the mean is quite low and there only a few parties above the mean. But the most important know is to understand how does this vary across different groups such as countries, families to understand why some partis more than other think russian interference is a problem.
 
-Let's first have a look on how the data is distributed. For this I create a ggplot with the russian_interference variable and I add a `geom_histogram()`. This function can take a bin argument where you can specify the number of bins you want in your graph. 
+Let's first have a look on how the data is distributed. For this I create a ggplot with the russian_interference variable and I add a `geom_histogram()`. This function can take a bin argument where you can specify the number of bins you want in your graph.
 
 ```{r warning=FALSE}
 ches |> 
@@ -79,7 +112,7 @@ ches |>
   geom_histogram(bins = 30)
 ```
 
-We might assume that however, there is some variance across countries. Looking at the codebook, we see that there is an `eastwest` variable in the dataset distinguishing western and eastern european countries. The data is coded as 0 or 1 with a label coming from Stata. However, I want to replace these and I use the unlabelled function from the labelled package for this, that allows me to convert the 0 and 1 to their labels. 
+We might assume that however, there is some variance across countries. Looking at the codebook, we see that there is an `eastwest` variable in the dataset distinguishing western and eastern european countries. The data is coded as 0 or 1 with a label coming from Stata. However, I want to replace these and I use the unlabelled function from the labelled package for this, that allows me to convert the 0 and 1 to their labels.
 
 ```{r}
 ches |> count(eastwest)
@@ -89,7 +122,7 @@ ches <- ches |> mutate(eastwest = labelled::unlabelled(eastwest))
 ches |> count(eastwest)
 ```
 
-To see whether the salience of russian interferance varies across region, we need to plot a bivariate graphs where we can compare the two distributions. A first way to do this is to differentiate the region by color. 
+To see whether the salience of russian interferance varies across region, we need to plot a bivariate graphs where we can compare the two distributions. A first way to do this is to differentiate the region by color.
 
 ```{r}
 ches |> 
@@ -97,7 +130,7 @@ ches |>
   geom_histogram(bins = 10)
 ```
 
-However, as the two colors, overlap, it might be easier to have the two graphs side by side. This can be done by adding a layer with `facet_wrap()`. 
+However, as the two colors, overlap, it might be easier to have the two graphs side by side. This can be done by adding a layer with `facet_wrap()`.
 
 ```{r}
 ches |> 
@@ -120,7 +153,7 @@ ches |>
   geom_freqpoly(aes(color = as.factor(eastwest)))
 ```
 
-We can also look at how this varies across countries. As the `ches$country` variable is coded by countrycodes that are not meaningful, I also convert them with their labels as I did for the region. 
+We can also look at how this varies across countries. As the `ches$country` variable is coded by countrycodes that are not meaningful, I also convert them with their labels as I did for the region.
 
 ```{r}
 ches <- ches |> mutate(country = labelled::unlabelled(country))
@@ -158,9 +191,6 @@ ches <- ches |>
   ))
 ```
 
-
-
-  
 ```{r}
 ches |> 
   ggplot(aes(lrgen, russian_interference)) +
@@ -233,36 +263,45 @@ Aussi montrer des geom bar, des geom line dans le temps, des geom col, des geom 
 
 ## Export graphs
 
-
-
-
-
-
 ### Exercice 3 : vizualising political parties
 
-1. Download and import the [Chapell Hill Expert Survey trend file](https://www.chesdata.eu/ches-europe) into Rstudio
+1.  Download and import the [Chapell Hill Expert Survey trend file](https://www.chesdata.eu/ches-europe) into Rstudio
 
-2. Explore the codebook to see the variables available in this dataset and choose one of your interest^[Variables on international security or position towards the US might be of interest for IR students for instance]. 
+2.  Explore the codebook to see the variables available in this dataset and choose one of your interest[^03_dataviz-1].
 
-3. Using graphs, provide a brief analysis of how political parties differ on this issue. You should find a way to use at least the following geoms :  `geom_bar()`, `geom_point()`, `geom_boxplot()`. If you want to polish the aesthetics of your graphics, take a look at these resources. 
+3.  Using graphs, provide a brief analysis of how political parties differ on this issue. You should find a way to use at least the following geoms : `geom_bar()`, `geom_point()`, `geom_boxplot()`. If you want to polish the aesthetics of your graphics, take a look at these resources.
 
-4. Combine both your code and your analysis in a quarto document, render it in pdf and upload it on moodle. 
+4.  Combine both your code and your analysis in a quarto document, render it in pdf and upload it on moodle.
 
 ## To go further
 
-- Kieran Healy's has written a whole [book](https://socviz.co/index.html#preface) on dataviz. 
-- Other [book](https://clauswilke.com/dataviz/) by Claus O Wilke on dataviz 
-- Chapter on dataviz in the R for Data science [book]((https://r4ds.hadley.nz/visualize.html)) 
-- Chapter by Irizarry in his [book]((http://rafalab.dfci.harvard.edu/dsbook/introduction-to-data-visualization.html))
-- A [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) by Hadley Wickham explaining the idea of "grammar of graphics"
-- If you would also like to learn how to animate your graphs, you can consult the [`gganimate`](https://gganimate.com/) package. 
-- Tutfte : The visual display of quantitative information
-- A [video](https://www.youtube.com/watch?v=G2lMBNkbggg) by Chris Bail introducing dataviz 
-- Other ressources pointed out by François Briatte on [github](https://github.com/briatte/dsr/wiki/readings#4-visualization
-)
+-   [R Graphics Cookbook](https://r-graphics.org/)
 
+-   [ggplot2:Elegant graphics for data analysis](https://ggplot2-book.org/)
 
+-   Kieran Healy's has written a whole [book](https://socviz.co/index.html#preface) on dataviz. See also his paper on ARS : Data viz and sociology
 
-- 
+-   Other [book](https://clauswilke.com/dataviz/) by Claus O Wilke on dataviz
 
+-   Chapter on dataviz in the R for Data science [book]((https://r4ds.hadley.nz/visualize.html))
+
+-   https://clauswilke.com/dataviz/
+
+-   Chapter by Irizarry in his [book]((http://rafalab.dfci.harvard.edu/dsbook/introduction-to-data-visualization.html))
+
+-   A [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) by Hadley Wickham explaining the idea of "grammar of graphics"
+
+-   If you would also like to learn how to animate your graphs, you can consult the [`gganimate`](https://gganimate.com/) package.
+
+-   Tutfte : The visual display of quantitative information
+
+-   A [video](https://www.youtube.com/watch?v=G2lMBNkbggg) by Chris Bail introducing dataviz
+
+-   Other ressources pointed out by François Briatte on [github](https://github.com/briatte/dsr/wiki/readings#4-visualization)
+
+-   GGplot extensions : https://exts.ggplot2.tidyverse.org/gallery/
+
+-   https://stackoverflow.com/questions/tagged/ggplot2
 :::
+
+[^03_dataviz-1]: Variables on international security or position towards the US might be of interest for IR students for instance
