@@ -4,25 +4,98 @@ editor_options:
   chunk_output_type: console
 ---
 
-Today we focus on bivariate relationships, we want to measure how 2 variables might be associated one with one another (give exemples of this). Be aware that here, we only talk about relationship but not causality : endogeneity, other variables that might influence a relationship.
+Today we focus on bivariate relationships, we want to measure how 2 variables might be associated one with one another (give exemples of this). Be aware that here, we only talk about relationship but not causality : endogeneity, other variables that might influence a relationship. When we are interested in inference, we do statistical tests. We usually have a sample of the data and we want to infer something on the population at large. But we need also to measure our uncertainty on this and have a best-guess wich will be our estimate. 
+
+Small data sample : our results depend on how the data was sampled. 
 
 You can do this throught different ways
 
--   Corss-tabulations
+## Testing bivariate relationships 
 
-## Testing the relationship between two categorial variables : χ² test
+Our goal is inference here, we want to ask ourselves, is the relationship we see in the data real or is it due to random chance ? So we postulate a null hypothesis : that the relationship we see is by random chance. We probably want to reject this null hypothesis and prove our alternative hypothesis that this effect is non random. For this we do a test that gives us a p_value which is the probability that our observed data come about if the null hypothesis was true. 
+
+https://www.tidymodels.org/learn/statistics/infer/
+https://moderndive.github.io/moderndive_labs/static/previous_versions/v0.6.0/10-hypothesis-testing.html : interesting paragraphs on p-values hacking and misunderstanding them and so on
+
+### Two categorial variables : χ² test
+
+- `table()`, `prop.table()`, `tabyl()`
+- Cross tabulations, introduction to kable or gtsummary, exporting table
 
 You can use the `chisq.test()` function, taking the result of a `table()`.
 
-## Comparing means
+```{r}
+library(tidymodels) # Includes the infer package
 
-## Comparing two continous variables with correlations
+data(ad_data, package = "modeldata")
+ad_data %>%
+  select(Genotype, Class)
 
-## Linear regression
+# calculate the observed statistic
+observed_indep_statistic <- ad_data %>%
+  specify(Genotype ~ Class) %>%
+  calculate(stat = "Chisq")
+
+observed_indep_statistic
+
+null_distribution_simulated <- ad_data %>%
+  specify(Genotype ~ Class) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 5000, type = "permute") %>%
+  calculate(stat = "Chisq")
+
+null_distribution_simulated
+
+null_distribution_simulated %>%
+  visualize() + 
+  shade_p_value(observed_indep_statistic,
+                direction = "greater")
+```
+
+
+
+### Comparing means : t.test
+
+### Comparing two continous variables with correlations
+
+```{r}
+x <- rnorm(100, 0, 1)
+y <- rnorm(100, 0, 2)
+bind_rows(
+  cor.test(x, y) |> broom::tidy(),
+  cor.test(x, y, method = "kendall") |> broom::tidy(),
+  cor.test(x, y, method = "spearman") |> broom::tidy()
+)
+
+```
+
+- GGaly : ggpair and ggcorr functions with seleft if is.numeric de dplyr
+
+```{r}
+library(GGally)
+df %>%
+dplyr::select_if(is.numeric) %>%
+    ggpairs()
+```
+
+
+## Introduction to linear regression
 
 -   Linear relationship between a continuous variable (our dependent variable) and one or several independent variables. Linear relationship means that this relationship can be represented by a droite.
 
+https://jhudatascience.org/tidyversecourse/model.html
+
 In R, it is really easy to calculate a linear regression model. You need to use the `stats::lm()` function. You need to insert a formula with on the left, the variable you want to explain and the right, the independent variables and in between, a `~`.
+
+```{r}
+
+tibble(x =  rnorm(1:100, mean = 0, sd = 1),
+       y <- rnorm(1:100, mean = 0, sd = 1)) |>
+  ggplot(aes(x, y)) +
+  geom_point()
+
+```
+
 
 ## 
 

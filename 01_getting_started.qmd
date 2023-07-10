@@ -299,6 +299,9 @@ class(1)
 
 The functions used so far such as `sum()` and `mean()` are directly available from base R, which are all the functions that are already pre-loaded. However, many functions you will use are not directly available and come from specific packages that people have created and that you can install and load in R. For instance, package : tidyverse. To install a package, write `install.packages("tidyverse")` in the console. You will have to do this only once. However, you will need to load the package everytime you start your script. 
 
+-   What is a package : you must use quotation marks you must use (single or double) quotation marks around the package's name:
+
+-   Calling a package
 ```{r}
 library(tidyverse)
 ```
@@ -359,26 +362,20 @@ elec[5, 1] # get the value of the row 5, column 1
 ```{r}
 head(elec, 2)
 tail(elec, 2)
-dplyr::glimpse(my_data)
-colnames(my_data)
-dim(my_data)
-nrow(my_data)
-summary(my_data)
+dplyr::glimpse(elec) # from the dyplr package
+colnames(elec)
+dim(elec)
+nrow(elec)
+summary(elec)
 ```
 
-No correct way to do stuffs in R, you can do the same things in very different ways : learning how to learn. You cannot remember anything. We do google search all the time. But you need some patience.
+One thing you need to know is thay there are many ways to do the same thing in R and you do not have to memorize them. You need to understand the logic, to learn how to learn. 
 
-Install Packages
-
-that you need to load with library.
-
-## Importing data
+## Data import and export
 
 ### Get data
 
-Last time we tried to get a sense of what R can do with basic arithmetics but usually we are interested in working with real data. Our goal with R is to use programming to produce analysis of quantitative data. Then the first thing you need is to get that data somewhere, either collect if through a survey, or build a dataset yourself by coding some informations about the individuals or organizations you are interested in. But there are also many many many datasets already available around there that people (administrations, researchers, ngos, companies, international organization and so on) have already created and made available. At this stage, I will give you already-made datasets on which you can work, but you should know that with R, you can collect data directly from the internet : this is called web scraping (you can learn that later on if you continue to)
-
-So far, I showed you basic use of R with fake data. But our goal with R is to use programming to produce analysis of quantitative real data to answer social sciences research questions. Then, the first thing you need is to get data. There are a lot of data around us such as :
+So far, we created some data from scratch for the sake of the example. But from now, we will be interested in working with real data to analyze it. The first stage in every data analysis project is to get/collect/produce data. Then the first thing you need is to get that data somewhere, either collect if through a survey, or build a dataset yourself by coding some informations about the individuals or organizations you are interested in. But there are also many many many datasets already available around there that people (administrations, researchers, ngos, companies, international organization and so on) have already created and made available. In Appendix of the course, you will find a lists of them that you can explore if you want. 
 
 -   Surveys : ex : measuring people attitudes
 -   Text
@@ -393,13 +390,15 @@ You could also consider producing your own datasets through :
 -   Scraping
 -   Hand-coding
 
+At this stage, I will give you already-made datasets on which you can work, but you should know that with R, you can collect data directly from the internet : this is called web scraping (you can learn that later on if you continue to)
+
 ### Read data into R
 
 The first thing we have to do when working with data in importing data into R. This step is crucial, make looks simple but sometimes is not and because datasets comes in very different format. The most common is .csv (for comma separated values), butin political science, you will find also a lot of stata (.dta) or spss (.sav) files. In base R, you can use the `read.csv()` function to import csv file.
 
 To import data here, we will use the `readr` package, that is part of the `tidyverse`.
 
--   read_r : read_csv, read_csv2
+-   `read_r` package : `read_csv()`, `read_csv2()`
 
 -   Importance of paths
 
@@ -407,34 +406,23 @@ To import data here, we will use the `readr` package, that is part of the `tidyv
 
 ### Write data
 
-Once you have done something, that you want to share it or hand it to me for your assignment, you
+Once you have done something, that you want to share it or hand it to me for your assignment. 
+
+```{r}
+write_csv(elec, "elec.csv")
+elec <- read_csv("elec.csv")
+```
+
 
 ## Literate programming
 
 Liteeate progrmming (Knuth 1984)
-I already told you about replication and eveyrhing. Rstudio allows you to combine text and code in the same documents. I will try to introduce you to these tools because there are really nice to write.
+I already told you about replication and eveyrhing. Rstudio allows you to combine text and code in the same documents. I will try to -   Or literate programming documents : Quarto/Rmarkdown : documents that allows you to combine text and code and then to convert them in pdf, word or html format.
+introduce you to these tools because there are really nice to write.
 
 -   Script : way to write down code, you do not have to write everything again next time
 
 When you open a quarto document, you will have to fill the top matter, called tha YAML
-
-
--   Or literate programming documents : Quarto/Rmarkdown : documents that allows you to combine text and code and then to convert them in pdf, word or html format.
-
-Notions : script, code, programmation
-
-
-
-
-
--   R script : write code and \# with comments
-
-
-## Packages and libraries
-
--   What is a package : you must use quotation marks you must use (single or double) quotation marks around the package's name:
-
--   Calling a package
 
 ## Getting help and dealing with errors
 
