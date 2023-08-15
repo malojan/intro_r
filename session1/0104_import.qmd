@@ -1,0 +1,51 @@
+# Import and write data
+
+## Getting data
+
+Up to this point, I created data from scratch for the sake of the example. But from now, we will be interest in in working with real data to analyze it. Every data analysis projet starts with getting data. You could collect/produce your own data through a survey, by scraping websites or by coding informations about the individuals/organizations/countries you are interested in. But there are also plenty of datasets already available around there that people (other researchers, administrations, parliaments, ngos, companies, international organizations...) have already produced and made available. I highly encourage you to have a look of this awesome [list](https://github.com/erikgahner/PolData) of political datasets created by Erik Gahner Larsen. In this course, we will use already-made datasets widely used in political science on which you can practice.
+
+## Read data into R
+
+### File formats and paths
+
+To analyse data in R, we have to import it. This step is crucial. Sounds simple enough, but can be a real headache when you're a beginner. R needs two important pieces of information in order to read a file : the **file format** and the **path**.
+
+First of all, data comes in different file formats which are standardized structures used to store and organize data in digital files. They dictate how information is encoded, structured, and stored within a file, enabling various software programs to understand and interpret the data correctly. The most common one for data is `.csv` (for comma separated values) but in political science you will also find a lot of Stata (`.dta`) and SPSS (`.sav`) files. To enable R to read a file, you'll need to use different functions depending on the file format.
+
+Second, R needs to know where to find the data. The path refers to the location of a file or directory within a file system. It specifies the sequence of directories and subdirectories needed to navigate to a particular file. Paths can be either absolute or relative.
+
+-   The **absolute path** provides the full and explicit location of a file or directory starting from the root directory of the file system. For example: `/home/user/documents/myfile.txt` (on Unix-like systems) or `C:\Users\user\Documents\myfile.txt` (on Windows).
+-   A **relative path** is a path expressed relative to the current working directory. It describes the path to a file or directory from your current location. For example: data/mydata.csv indicates a file named "mydata.csv" located in a subdirectory called "data" from your current directory.
+-   The **working directory** is the current directory in which R is operating. When you read or write files in R without specifying an absolute path, R assumes you are referring to a file or directory within the working directory.
+
+You can get your working directory with the `getwd()` function that will return the current working directory. You wan also set your working directory with the `setwd()` function by specifying a path.
+
+https://jhudatascience.org/tidyversecourse/intro.html#the-here-package
+
+Please note that working with absolute path is a very bad practice because nobody will be able to use your code. Working with R projects means you automatically have the working directory at the project location (where the `.Rproj` file is stored in), so you don't have to work with absolute paths.
+
+### Functions to import data in R
+
+There are different functions to import data into R.
+
+-   Base R To import data in R, we will use the R base provides several functions to import data such as `read.csv()`. I personnaly prefer using the `readr` package which is part of the tidyverse. To read a csv file, you will need the `read_csv()` function.
+
+To import data here, we will use the - `read_r` package : `read_csv()`, `read_csv2()`
+
+To import files in Stata or SPSS format, you will need to install and load the `haven` package wich contains a `read_dta()` function for State files and `read_sav()` function for SPSS files.
+
+-   Sometimes files are also in excel format and `readxl` package
+
+These functions also allows ou to import a file directly from an file url.
+
+-   Columns types
+
+### Write data
+
+Once you have done something, that you want to share it or hand it to me for your assignment.
+
+```{r}
+library(readr)
+#write_csv(elec, "elec.csv")
+#elec <- read_csv("elec.csv")
+```

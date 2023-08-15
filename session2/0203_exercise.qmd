@@ -1,0 +1,15 @@
+# Exercise 2 : exploring british election results
+
+1.  Create a quarto document with "Exercise 2" as title and your name as author.
+
+2.  Import the results of the British General Elections for both [2019]((https://commonslibrary.parliament.uk/research-briefings/cbp-8749/)) and [2017](%5B2017%5D(https://commonslibrary.parliament.uk/research-briefings/cbp-7979/)). For each dataset, create a new variable called year to indicate the year of the election.
+
+3.  Examine the structure of both datasets and then combine them into a single dataset.
+
+4.  Determine the number of seats won by the Conservatives between 2017 and 2019. Also, calculate the number of seats lost by the Labour party between the two elections. (*hint*: Use the `first_party` variable to identify the winning party in each constituency).
+
+5.  Convert the dataset into a longer format where all the party variables are consolidated into a single column along with their corresponding vote shares.
+
+6.  In 2017, which parties presented the highest and lowest number of candidates? (*hint*: We assume that no candidate was presented when the party received zero votes). Please provide an intuitive explanation of the results. If you are unfamiliar with the UK party system, you can find more information on this [Wikipedia page]((https://en.wikipedia.org/wiki/List_of_political_parties_in_the_United_Kingdom).
+
+7.  Calculate the mean of vote shares of each party in each country. In which country do the main parties suffer the most from regionalist parties ?

@@ -1,0 +1,230 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Manipulating data
+
+At this point, you are now able to import a data file into Rstudio and quickly explore the structure of the dataset, which is usually the first step in any analysis. If the dataset is well-structured, we then need to carry out a very important operation, which we'll see how to do in R: manipulate the data to obtain the information we want. In many cases, we're not interested in the whole dataset; we want to select specific variables, analyze only certain groups and see how these variables vary according to these groups.
+
+With R, there are several ways to perform these operations. Firstly, you can use R's basic functions, without having to load a specific package. An alternative approach is based on the tidyverse, the package suite developed by [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham) with a special syntax. Here, we'll concentrate on the tidyverse functions, which I feel are easier and more intuitive to use.
+
+The tidyverse relies extensively on what is called "the pipe" : `>`. Depending on the version of R, you might also have this one `%>%`. There are a few differences between the two but at this stage, it is not really important. You will quickly understand what the pipe is, we use it to chain instructions just as in a recipe.
+
+## Introduction to dplyr functions
+
+To manipulate data, we will use a package from the tidyverse called `dplyr`, comprising a comprehensive suite of exceptionally useful functions. To familiarize ourselves with its usage, we will explore the [Quality of Government Environmental Indicators](gu.se/en/quality-government/qog-data/data-downloads/environmental-indicators-dataset) dataset. To do this, we will need first to load the tidyverse and find the data online. To ensure reproducibility, you can directly download the file in your laptop from R with the `download.file()` function which has two arguments : the url of the dataset and the path you want to save it. Then, we import the data`.dta` format using the `haven` package.
+
+```{r}
+# Load the tidyverse
+
+library(tidyverse) 
+library(knitr)
+
+# Download the QOG dataset directly from R
+
+fs::dir_create("data")
+
+#download.file("https://www.qogdata.pol.gu.se/data/qog_ei_ts_sept21.dta", destfile = "data/qog_env.dta")
+
+# Import the qog environment dataset
+
+qog <- haven::read_dta("data/qog_env.dta") 
+```
+
+Once we have imported our data, we usually have descriptive sumamry of what it looks like. There are many ways to do that.
+
+```{r}
+colnames(qog, 1)
+```
+
+Find a way to also use table() or summary() \`
+
+```{r}
+table(qog$iead_eif1)
+```
+
+### `count()`
+
+From Exercise 1, we saw that the qog dataset has a country-year structure. For each country, we have a series of indicators with one value per year. the `qog` dataset has a `year` variable and a `country` variable.
+
+```{r}
+qog |> 
+  count(year)
+
+qog |> 
+  count(year, cname)
+```
+
+```{r}
+table(qog$em_envmin)
+```
+
+### `filter()` observations
+
+We may want to use only a subset of countries and get a smaller versions of the dataset. And the tiverse has one for this, which is called filter. We want to select specific rows/observations of the dataset based on a specific conditions. To filter, we will use extensively boolean operators.
+
+| Operator | Description           |
+|----------|-----------------------|
+| `==`     | equal                 |
+| `!=`     | not equal             |
+| `<`      | less than             |
+| `<=`     | less than or equal    |
+| `>`      | greater than          |
+| `>=`     | greater than or equal |
+| `|`      | or                    |
+| `!`      | not                   |
+| `%in%`   | in the set            |
+
+For instance, I might be only interested in environmental indicators for France. In that case I could filter the whole dataset with only the observations that has France as country variable.
+
+```{r}
+qog |> 
+  filter(cname == "France") 
+```
+
+Here, see that the tidyverse functions are a bit clearer that what you could do directly with R base functions. To do the same, here an example of what we would have done :
+
+```{r}
+qog[qog$cname %in% c("France"), ]
+```
+
+You could also filter by all of the countries that are NOT France
+
+```{r}
+qog |> 
+  filter(cname != "France") |> 
+  count(cname)
+```
+
+Or you would try with different countries. In that case, you can use `%in%`.
+
+```{r}
+qog |>
+  filter(
+    cname %in% c(
+      "France",
+      "Norway",
+      "Spain",
+      "Denmark"))
+```
+
+But we also want to store the data to manipulate it and so it is easier to create an object.
+
+```{r}
+(qog_subset <- qog |>
+  filter(
+    cname %in% c(
+      "France",
+      "Norway",
+      "Spain",
+      "Denmark",
+      "Netherlands",
+      "Poland",
+      "Russia",
+      "Saudi Arabia",
+      "India"
+    ),
+    year > 1990
+  ))
+
+```
+
+## `select()` variables
+
+While `filter()` is useful for keeping only certain groups of rows, `select()` is used, as its name suggests, to select certain variables (columns) from our dataframe.
+
+Let's say I'm interested in CO2 emissions per capita, their overall level and how they vary over time and by country. For this, I need only three variables that are present in the dataset: `year`, `cname` and the variable `wdi_co2` which comes from the [World Bank's World Development Indicators](https://databank.worldbank.org/source/world-development-indicators). To do this, I use `select()` and just specify which variables of the dataset I want to select.
+
+```{r}
+qog_co2 <-qog_subset |> 
+  select(cname, year,  wdi_co2)
+
+qog_co2
+```
+
+The functions offer a lot of possibilities :
+
+```{r}
+qog_subset |> select(cname, year, starts_with("wdi"))
+```
+
+## Calculating statistics by group with `.by` and `summarise()`
+
+To compute a first set of descriptive statistics, we could look at the central indicators of the co2 emissions su
+
+```{r}
+mean(qog_co2$wdi_co2)
+```
+
+Does not work, why ? Because we have some NA and the mean do not understand so you have to change
+
+```{r}
+mean(qog_co2$wdi_co2, na.rm = TRUE)
+median(qog_co2$wdi_co2, na.rm = TRUE)
+sd(qog_co2$wdi_co2, na.rm = TRUE)
+quantile(qog_co2$wdi_co2, na.rm = T)
+```
+
+```{r}
+#| output: asis
+qog_stats <- qog_co2 |> 
+  summarise(mean_co2 = mean(wdi_co2, na.rm = T), 
+            median_co2 = median(wdi_co2, na.rm = T),
+            sd_co2 = sd(wdi_co2, na.rm = T),
+            q1 = quantile(wdi_co2, 0.25, na.rm = T),
+            q3 = quantile(wdi_co2, 0.25, na.rm = T),
+            .by = cname)
+
+qog_stats |> knitr::kable()
+```
+
+Here if you look at the dataframe, it irs order by country and they year, but we could want to see how it. Here we see that on average, the Saudi Arabia, Russia have the highest on the period.
+
+```{r}
+qog_stats |> 
+  arrange(desc(mean_co2))
+```
+
+We can also wonder when, on average, the level of emissions per capita was the lowest in Saudi Arabia. To do this, you need to group the dataframe by year and calculate the average. On average, we can observe that the level of CO2 emissions per capita was the lowest at the end of the 1990s, which raises questions about of their ability to reduce them!
+
+```{r}
+qog_co2 |> 
+  filter(cname == "Saudi Arabia") |> 
+  summarise(mean_co2 = mean(wdi_co2, na.rm = T), .by = year) |> 
+  arrange(mean_co2) 
+```
+
+### Mutate
+
+-   Difference with summarise
+
+-   introduce the lag function
+
+```{r}
+qog_growth <- qog_co2 |>
+  mutate(co2_lag = lag(wdi_co2),
+         co2_growth = (wdi_co2 - co2_lag) / co2_lag, 
+         .by = cname)
+```
+
+The `dplyr` package has also a lot a useful functions to get the most important results such as `slice_max()` that gives us observations that have the maximum values.
+
+```{r}
+qog_growth |> 
+  slice_max(co2_growth, n = 1)
+
+qog_growth |> 
+  slice_min(co2_growth, n = 1) |> 
+  knitr::kable()
+```
+
+# Formatting tables with knitr::kable()
+
+```{r}
+#| output: asis
+qog_growth |> 
+  slice_min(co2_growth, n = 1) |> 
+  knitr::kable()
+```

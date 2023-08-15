@@ -1,0 +1,126 @@
+---
+engine: knitr
+---
+
+# Testing relationships
+
+Here : use affective polarization in french election survey in 2023. Create a survey with who vote for whom and degree of polarization among groups.
+
+- Intérêt pour la variation, relations entre différentes variables
+The primary emphasis of this session lies in bivariate relationships. When analyzing data, we often seek to measure the association between two distinct variables: Do men vote for radical right parties more frequently than women? Do autocratic regimes engage in warfare more often than democracies? Do individuals who possess more information tend to have stronger beliefs in the reality of climate change compared to others ? Here, we only focus on relationship and not causality. Assessing for causality would mean to understand the exact sense of the relationship and taking into account other variable that might influence this association.
+
+Precisely, when examining these relationships, we are interested in inference. Typically, our analysis is based on a sample of the population under study, and therefore, our results are contingent on this sampling. However, our objective is to make general statements or draw conclusions about the larger population. In order to determine if the association observed in our data can be generalized, we need to conduct statistical tests. These tests provide us with a best estimate of the "true" value of the population parameter and assess the level of confidence we have in our findings, indicating how different the observed association in our data might be from the actual population relationship. By conducting these statistical tests, we can make more reliable inferences about the broader population based on the sample we have analyzed.
+
+Our goal is inference here, we want to ask ourselves, is the relationship we see in the data real or is it due to random chance ? So we postulate a null hypothesis : that the relationship we see is by random chance. We probably want to reject this null hypothesis and prove our alternative hypothesis that this effect is non random. For this we do a test that gives us a p_value which is the probability that our observed data come about if the null hypothesis was true.
+
+https://www.tidymodels.org/learn/statistics/infer/ https://moderndive.github.io/moderndive_labs/static/previous_versions/v0.6.0/10-hypothesis-testing.html : interesting paragraphs on p-values hacking and misunderstanding them and so on
+
+### Two categorial variables : χ² test
+
+Bivariate relationships are often presented with cross-tabulations which gives us the cross distributions of two different variables. 
+
+-   `table()`, `prop.table()`, `tabyl()`
+-   Cross tabulations, introduction to kable or gtsummary, exporting table
+
+You can use the `chisq.test()` function, taking the result of a `table()`.
+
+```{r}
+library(tidymodels) # Includes the infer package
+
+data(ad_data, package = "modeldata")
+ad_data %>%
+  select(Genotype, Class)
+
+# calculate the observed statistic
+observed_indep_statistic <- ad_data %>%
+  specify(Genotype ~ Class) %>%
+  calculate(stat = "Chisq")
+
+observed_indep_statistic
+
+null_distribution_simulated <- ad_data %>%
+  specify(Genotype ~ Class) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 5000, type = "permute") %>%
+  calculate(stat = "Chisq")
+
+null_distribution_simulated
+
+null_distribution_simulated %>%
+  visualize() + 
+  shade_p_value(observed_indep_statistic,
+                direction = "greater")
+```
+
+### Comparing means : t.test
+
+### Comparing two continous variables with correlations
+
+```{r}
+
+prelec
+prelec_wide <- prelec |> 
+  pivot_wider(names_from = candidate, values_from = vote_share, names_prefix = "candidate_")
+
+prelec_wide |> colnames()
+```
+
+https://jmbuhr.de/dataintro/fallacies-correlation-and-regression.html
+
+```{r}
+x <- rnorm(100, 0, 1)
+y <- rnorm(100, 0, 2)
+bind_rows(
+  cor.test(x, y) |> broom::tidy(),
+  cor.test(x, y, method = "kendall") |> broom::tidy(),
+  cor.test(x, y, method = "spearman") |> broom::tidy()
+)
+
+prelec_wide |> 
+  select(starts_with("candidate")) |> 
+  cor() |> 
+  ggcorrplot::ggcorrplot(hc.order = TRUE, type = "lower",
+   lab = TRUE)
+
+cor(prelec_wide$candidate_macron, prelec_wide$candidate_le_pen, use = "complete")
+
+
+candidates_matrix <- prelec_wide |> 
+  select(starts_with("candidate")) |> 
+  corrr::correlate()
+
+candidates_matrix |> 
+  corrr::shave() |> 
+  corrr::stretch() |> 
+  arrange(r)
+```
+
+```{r}
+candidates_matrix  |> 
+  corrr::rearrange()
+
+candidates_matrix |> 
+  corrr::rplot()
+```
+
+-   GGaly : ggpair and ggcorr functions with seleft if is.numeric de dplyr
+
+```{r}
+prelec |> 
+  filter(candidate %in% c("le_pen", "zemmour", "macron", "melenchon", "pecresse", "jadot")) |> 
+  ggplot(aes(immig_share, vote_share)) + 
+  geom_point(alpha = 0.02) + 
+  geom_smooth(method = "lm", linetype = "dashed", aplha = 0.3, formula = "y ~ x", se = TRUE) +
+  scale_color_brewer(palette = "Set1") +
+  theme_light() + 
+  facet_wrap(~ candidate)
+
+prelec |> 
+  ggplot(aes(ouvri_share, vote_share)) + 
+  geom_point(alpha = 0.02) + 
+  geom_smooth(method = "lm") +
+  theme_light() + 
+  geom_vline(xintercept = mean(prelec$ouvri_share, na.rm = TRUE), lty = "dashed") +
+  geom_hline(yintercept = mean(prelec$vote_share, na.rm = TRUE), lty = "dashed") +
+  facet_wrap(~ candidate, scales = "free")
+```

@@ -1,21 +1,51 @@
 project:
   type: book
+  output-dir: docs
+  execute-dir: file
 
 book:
-  title: "course"
-  author: "Jane Doe"
+  title: "Introduction to R"
+  author: "Malo Jan"
   date: "4/13/2023"
+  search: true
+  sidebar:
+    collapse-level: 3
+    pinned: true
   chapters:
     - index.qmd
-    - intro.qmd
-    - summary.qmd
-    - references.qmd
+    - part: "Session 1 : Getting started"
+      chapters: 
+        - session1/0101_whyr.qmd
+        - session1/00_setup.qmd
+        - session1/0102_workflow.qmd
+        - session1/0103_basics.qmd
+        - session1/0104_import.qmd
+    - part : "Session 2 : Manipulating data"
+      chapters:
+        - session2/0201_manipulate.qmd
+        - session2/0202_reshape.qmd
+        - session2/0203_exercise.qmd
+    - part : "Session 3 : Data visualization"
+    - part : "Session 4 : Testing relationships"
+      chapters:
+      - session4/04_relationships.qmd
+      - session4/04_linear.qmd
+    - part : "Session 5 : Cleaning and recoding data"
+    - part : "Session 6 : Multivariate analysis"
+      chapters: 
+        - session6/06_modelling.qmd
+  appendices: 
+    - appendices/functions.qmd
+
 
 bibliography: references.bib
 
 format:
   html:
-    theme: cosmo
+    theme: 
+    - cosmo
+    - style.css
+    callout-appearance: simple
   pdf:
     documentclass: scrreprt
 

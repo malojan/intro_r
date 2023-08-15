@@ -1,0 +1,92 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Exercice 2
+
+We will play with elections results from the British General elections. Elections results are usually published by official services of ministeries or parliament in different countries. And there are interesting for practicisng because they are often not in the tidy format we want to analyze them.
+
+1.  As for the first exercise, create a proper quarto document with the title exercise two and your name as author
+
+2.  Import the general elections results from the [British 2019](https://commonslibrary.parliament.uk/research-briefings/cbp-8749/) general elections and for [2017](https://commonslibrary.parliament.uk/research-briefings/cbp-7979/) for both create a new variable `year` indicating the year of the election.
+
+```{r}
+library(tidyverse)
+
+uk2019 <- read_csv("https://researchbriefings.files.parliament.uk/documents/CBP-8749/HoC-GE2019-results-by-constituency-csv.csv") |> mutate(year = 2019) |> 
+  select(- declaration_time)
+uk2017 <- read_csv("https://researchbriefings.files.parliament.uk/documents/CBP-7979/HoC-GE2017-constituency-results.csv") |> mutate(year = 2017)
+```
+
+3.  Have a look at how the two dataset are structured and combine them into only one dataset
+
+```{r}
+glimpse(uk2019)
+glimpse(uk2017)
+uk_all <- bind_rows(uk2019, uk2017)
+
+```
+
+5.  How many seats did the Conservatives win between 2017 and 2019 ? How many seats did the Labor loose between the two elections ? (*hint* : the variable `first_party` indicates who won a seat in a constituency)
+
+```{r}
+uk_all |> 
+  filter(first_party %in% c("Lab", "Con")) |> 
+  count(first_party, year) 
+```
+
+Then you can easily see that `365-317 = 48` and `202-262 = - 60`
+
+```{r}
+uk_all |> 
+  filter(first_party %in% c("Lab", "Con")) |> 
+  count(first_party, year) |> 
+  mutate(diff = n - lag(n), .by = first_party)
+```
+
+5.  With the help of the functions you learnt with the `tidyr` package, convert the dataset in a longer format where all the parties variables become in the same rows with their votes in anoter row
+
+```{r}
+uk_long <- uk_all |> 
+  pivot_longer(cols = c(con, lab, ld, brexit, green, snp, pc, dup, sf, sdlp, uup, alliance, ukip), names_to = "party", values_to = "votes")
+
+view(uk_long)
+```
+
+6.  In 2017, which are the parties that presented the highest and the lowest number of candidates ? (*hint* : we assume that no candidate was presented when the party received zero votes). Provide an intuitive explanation of the results. If you do not know anything about the UK party system, have a look at this [wikipedia page](https://en.wikipedia.org/wiki/List_of_political_parties_in_the_United_Kingdom)
+
+```{r}
+uk_long |>
+  filter(votes > 0, year == 2017) |>
+  count(party) |> 
+  arrange(desc(n))
+```
+
+7.  Calculate the mean of vote shares of each party in each country. In which country do the main parties suffer the most from regionalist parties ?
+
+```{r}
+
+uk_long <- uk_long |> mutate(vote_share = votes/valid_votes*100)
+
+uk_long |> 
+  filter(first_party != "lab", party == "lab")|> 
+  summarise(vote_share = mean(vote_share, na.rm = TRUE))
+
+uk_long |> 
+  group_by(country_name, party) |> 
+  summarise(mean = mean(vote_share, na.rm = T)) |> 
+  slice_max(mean, n= 5)
+```
+
+8.  On average, what was the margin of victory of the conservatives when they gain from Lab ?
+
+```{r}
+uk_long |> 
+  filter(result == "Con gain from Lab", party %in% c("lab", "con")) |> 
+  summarise(party, diff = vote_share - lag(vote_share))  |> 
+  filter(party == "lab") |> 
+  summarise(mean_lose = mean(diff, na.rm = T))
+
+```

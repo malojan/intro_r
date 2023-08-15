@@ -1,0 +1,45 @@
+---
+title: "Data management"
+---
+
+Maybe this session will be really focused on recoding data, work with the european social survey.
+
+Working with surveys data, you will find a lot a `NA`.
+
+While we will not cover that here, be aware that there are also different imputations techniques that can be used.
+
+chaque ligne correspond à une observation chaque colonne correspond à une variable chaque valeur est présente dans une unique case de la table ou, de manière équivalente, des unités d'observations différentes sont présentes dans des tables différentes
+
+-   Convert from raw form to tidy data
+-   String processing, date parsing
+
+## String processing : stringr package
+
+## Date parsing : lubridate package
+
+## Reshaping data
+
+-   tidyr package
+
+-   pivot_longer()
+
+-   pivot_wider()
+
+-   separate()
+
+-   Complete, Fill \## Combining datasets
+
+Most of the quantitative data projects involve not one datasets but many. Some original research might come by combining different datasets to analyze relationships we do not know about.
+
+### Joins functions
+
+-   left_join()
+-   
+
+### Binding functions
+
+### Small introduction to web scraping
+
+### String processing
+
+### Date parsing

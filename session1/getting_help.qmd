@@ -1,0 +1,96 @@
+## Getting help and dealing with errors
+
+When learning a new language, we inevitably make mistakes. Programming can be highly frustrating because it throws numerous errors at us. Unlike when practicing a new language with foreigners, R is exceptionally strict in what it accepts. If you don't ask correctly, it won't comprehend anything. Therefore, you must discover ways to identify and understand the root causes of these errors.
+
+Overcome the errors is one of the most effective methods to learn R. Here a few places where you wan find the help you will need.
+
+### R documentation
+
+Every function/package has a documentation written by those who created it. You can access it directly from Rstudio by adding a `?` in front of it in the console and run this line of code. This will open a description displayed on the help pane of the function, the different arguments it can take and a few examples of it use. For instance
+
+```{r}
+?read_csv
+```
+
+### Cheatsheets
+
+Every package of the tidyverse (and some other) have a cheatsheat with a lot of infos of the different functions available on this [link](https://posit.co/resources/cheatsheets/). See for instance the reader [cheatsheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-import.pdf).
+
+### Online ressources
+
+First, you have to understand that the error you will get, many people have got it before you and some of them have asked online. So the first thing to do is to check whether people have already asked the same kind of questions. If R gives you an error and you don't understand what it means, it's highly likely that someone has already asked the question, and you can find on the site people who have provided solutions. You will also find help googling what you are looking for. Either when you want to do something (eg : "how to import a `.dta` file in R'), or when you want to deal with an error, just google the error. Most of the time you'll come across a blog called [Stackoverflow](https://stackoverflow.com/) , which brings together a community of users of different programming languages. In general, be aware that in programming, everyone copy and paste the code of everyone. You might also visit the website or [Rstudio Commmunity](@https://community.rstudio.com/) and look at the [#rstats](https://twitter.com/search?q=%23rstats&src=hashtag_click) on twitter.
+
+### AI is your friend
+
+Finally, when you write code, [ChatGPT](https://chat.openai.com/) can quickly become one of your closest allies. By providing it with your errors or asking for instructions to accomplish specific coding tasks, it can perform exceptionally well. I highly recommend utilizing it in your coding endeavors. However, be cautious as ChatGPT may occasionally produce non-existent functions or hallucinate. It's not a miraculous solution. Nevertheless, you'll swiftly realize whether the information provided is accurate or not because if it isn't, the code won't function properly in R.
+
+### Most common errors
+
+Finally, some errors are really common and you will probably face them often. I provide you here a (non exhaustive) list of those to help you troubleshooting[^getting_help-1].
+
+[^getting_help-1]: I rely on many blogposts done of this, [here](https://statsandr.com/blog/top-10-errors-in-r/), [here](https://warin.ca/posts/rcourse-howto-interpretcommonerrors/), [here](https://www.r-bloggers.com/2016/06/common-r-programming-errors-faced-by-beginners/), [here](https://epirhandbook.com/en/common-errors.html), [here](https://bookdown.org/yih_huynh/Guide-to-R-Book/trouble.html) and [here](https://blog.revolutionanalytics.com/2015/03/the-most-common-r-error-messages.html)
+
+#### Syntax errors
+
+Most of "beginners" errors in R are syntax errors : you mis code something and so Rstudio really does not understand. It can be typos when writing function and forgetting about a `)`, `,`, `"`. For instance, you would forget a closing `"` when wanting to subset the `Meloni` string of in the politicians vector : `politicians[politicians == "Meloni]`. In that case you will probably see a `+` in the console, meaning that R is waiting for something more to compute what you want to do.
+
+#### The "not found" errors
+
+-   `Error: function 'x' not found` : mispelling or package not loaded
+
+```{r error=TRUE}
+Library(tidyverse)
+means(c(15,16,19)) 
+read_html("https://labour.org.uk/category/latest/press-release/")
+```
+
+Capitalization/Mispelling In the first case, we want to compute the mean of a vector of different numbers. But we made a typo by adding a s to the `mean()` function, leading to an error. In the second we try to read the html code of a webpage, which is useful when we want to do web scraping. In that case, the function is correct, but we have not load the `rvest` package that provide this function before. So when you face this error, check both the spelling of the function and make sure its package is loaded (with `library(rvest)` for instance).
+
+-   `Error: object 'x' not found` : typo, forgot to run the line or saving object
+
+```{r error=TRUE}
+candidates <- c("Diaz", "Sanchez", "Abascal", "Feijoo")
+candidate[1]
+```
+
+You might alo want to look only at candidates from mainstream parties in the object `mainstream_candidates` Here, the error happens because we did not save any object with this value yet.
+
+```{r error=TRUE}
+mainstream_candidates
+
+mainstream_candidates <- candidates[!candidates %in% c("Abascal", "Diaz")]
+mainstream_candidates
+```
+
+`Error in install.packages : object 'x' not found`
+
+```{r error=TRUE}
+install.packages(rvest)
+```
+
+Most of the time, you just forget the `""` and you should write `install.packages("rvest")`. It might also be a typo in the package name (eg. you would have an error with `install.packag("Rvest")`.
+
+-   `Error: 'x' does not exist in current working directory`
+
+```{r error=TRUE}
+readr::read_csv("thisdata.csv")
+```
+
+#### Error in rnorm() : argument "n" is missing, with no default
+
+-   Error: cannot open the connection non-numeric argument to binary operator
+
+If you have just run all of your script in once and you do not know what did not work, run your code line by line.
+
+#### Inconsistent data types
+
+We have seen already that R comes with different data types such as `logical` or `character`. Many functions takes as argument a vector of a specific type and will not work on other. Below an obvious example : if we try to compute the mean of a character vector, this will not work.
+
+```{r error=TRUE}
+politicians
+class(politicians)
+mean(politicians)
+```
+
+-   \`\$ operator is invalid for atomic vectors\`\`
+-   `object of type ‘closure’ is not subsettable`

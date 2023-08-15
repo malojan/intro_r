@@ -1,0 +1,31 @@
+---
+title: "poll"
+---
+
+If you received this email, you are about to follow the lab sessions of the quantitative methods class of the research master in political science with me as teacher. In this class you will learn programming with R and Rstudio for social sciences purposes. This class is designed for complete beginners. However, you come all from different background and it is likely that some of you have experience either with statistics, programming. You will also have different willngness to learn.In this class, we we also practice with some data and it might be useful for me to know your research interests, to at least help you.
+
+This form is about learning more about your background, your research interests.
+
+### Experiences
+
+-   Experience in statistics
+-   Experience with programming
+-   Experience with Rstudio : have you ever used Rstudio before : Yes, extensively, Yes I have some experience, Never
+-   If experience with programming but another language than Rstudo, which one
+
+3.  Experience with Rstudio : have you ever used Rstudio before ?
+
+### Expectations for this class
+
+Do you have any specific expectations for this class ? Feel free to write down.
+
+### Research interests
+
+What are you research interests
+
+### Willingess to learn
+
+-   I am interested to apply quantitative methods in my master thesis
+-   Are you interested to learn specific quantitative methods ?
+
+### Anything else

@@ -1,0 +1,116 @@
+---
+title: "Regression"
+editor_options: 
+  chunk_output_type: console
+---
+
+## Diving into OLS regression
+
+# How to do a regression in R
+
+```{r}
+pacman::p_load(
+  tidyverse,
+  broom,
+  stargazer,
+  tidymodels
+)
+```
+
+Today, I will use a dataset on all the candidates at the french 2022 legislative election.
+
+```{r}
+pr_rn <- pr |> 
+  filter(nom == "LE PEN") 
+
+pr_rn |> ggplot(aes(vote_share)) + geom_histogram()
+pr_rn |> ggplot(aes(ouvri_share)) + geom_histogram()
+
+pr |> 
+  filter(nom %in% c("LE PEN")) |> 
+  ggplot(aes(ouvri_share, vote_share)) + 
+  geom_point(alpha = 0.02) + 
+  geom_smooth(method = "lm") +
+  theme_light() + 
+  geom_vline(xintercept = mean(pr$vote_share, na.rm = TRUE), lty = "dashed") +
+
+  facet_wrap(~ nom)
+
+pr_rn |> 
+  ggplot(aes(ouvri_share, vote_share)) + 
+  geom_point(alpha = 0.02) + 
+  geom_smooth(method = "lm") +
+  theme_light() + 
+  geom_vline(xintercept = mean(pr_rn$ouvri_share, na.rm = TRUE), lty = "dashed") +
+  geom_hline(yintercept = mean(pr_rn$vote_share, na.rm = TRUE), lty = "dashed") +
+  facet_wrap(~ nom)
+
+model <- lm(vote_share ~ ouvri_share, pr_rn)
+summary(model)
+
+ggplot(augment(model), aes(y = vote_share, x = ouvri_share)) +
+  geom_abline(intercept = coef(model)[1], slope = coef(model)[2], color = "blue") +
+  geom_segment(aes(xend = ouvri_share, yend = .fitted), color = "grey") +
+  geom_point(alpha = 0.4)
+
+ggplot(pr_rn, aes(y = vote_share, x = ouvri_share)) +
+  geom_point() +
+  geom_abline(intercept = coef(model)[1], slope = coef(model)[2], color = "blue")
+```
+
+```{r}
+candidates2022 <- read_csv("https://www.data.gouv.fr/fr/datasets/r/67d3987a-3f9d-464c-a678-116c25186f66") |> 
+  select()
+```
+
+```{r}
+candidates2017 <- openxlsx::read.xlsx("https://www.data.gouv.fr/fr/datasets/r/a3ce8a56-3e0f-46aa-8df9-17b7534a6d3d", sheet = 1) |> 
+  janitor::clean_names()
+```
+
+Issue with T1_EXP_VOTE variable : % that are not. Another option is to remove the strings with str_remove. Just to show you what is possible.
+
+```{r}
+candidates <- candidates |> 
+  rename(
+         incumbent = Candidat_sortant) |> 
+  mutate(score = T1_voix_candidat/T1_exprimes*100)
+```
+
+```{r}
+candidates |> 
+  janitor::tabyl(incumbent)
+
+# OUPS score is not numeric
+
+candidates |> 
+  ggplot(aes(score)) + geom_histogram()
+
+class(candidates$score)
+
+candidates <- candidates |> 
+  mutate(score = as.numeric(score))
+
+view(candidates)
+# Recode also the categories
+```
+
+-   Select variables of interest
+
+-   Line to minimize the distance between the
+
+```{r}
+ggplot(iris) +
+  aes(x = Petal.Length, y = Petal.Width) +
+  geom_point(colour = "blue", alpha = .25) +
+  geom_smooth(method = "lm") +
+  labs(x = "Longueur", y = "Largeur") +
+  theme_light()
+
+
+
+```
+
+```{r}
+model <- lm(score ~ incumbent + Sexe_candidat + Age_candidat, candidates)
+```

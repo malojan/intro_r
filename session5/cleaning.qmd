@@ -1,0 +1,20 @@
+
+## Dealing with NAs
+
+```{r}
+elec |> 
+  map(is.na) |> 
+  map(sum)
+
+elec %>% 
+        map(is.na) %>%
+        map(sum)%>%
+        map(~ . / nrow(df))%>%
+        bind_cols()
+library(naniar)
+
+```
+
+## Parse date
+
+## String processing

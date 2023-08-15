@@ -1,0 +1,136 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Testing relationships
+
+## Chi 2
+```{r}
+needs(tidyverse, here, janitor, haven, broom)
+
+fes2022 <- read_dta(here("data", "fes2022_w3.dta"))
+```
+
+```{r}
+fes2022 <- fes2022 |> 
+  rename(vote_int = fes3_QA05_2,
+         gender = cal_SEXE)
+
+fes2022 |> count(vote_int)
+
+fes2022 <- fes2022 |> 
+  mutate(vote_int = case_match(
+    vote_int,
+    c(1, 2) ~ "In favor",
+    c(3, 4) ~ "Not in favor"
+  ), 
+  gender = case_when(
+    gender == 1 ~ "Man",
+    gender == 2 ~ "Woman"
+  )
+  )
+
+fes2022 |> 
+  tabyl(gender, vote_int)
+
+chisq.test(fes2022$gender, fes2022$vote_int)
+```
+
+## Correlation
+
+### A brief recap on correlation
+
+A correlation coefficient measures the strength and direction of a linear relationship between two variables. It quantifies how changes in one variable correspond to changes in another variable. The correlation coefficient ranges between -1 and 1, where -1 indicates a perfect negative linear relationship, 1 indicates a perfect positive linear relationship, and 0 indicates no linear relationship.
+
+$$
+r = \frac{\sum{(x_i - \bar{x})(y_i - \bar{y})}}{\sqrt{\sum{(x_i - \bar{x})^2} \sum{(y_i - \bar{y})^2}}}\
+$$
+
+Correlations coefficients give you a indicator of the intensity of the relationships between two variables. 
+
+### Performing correlations in R
+
+To explore correlations, we will work on affective polarization in France. Affective polarization is a really trendy topic in political science. The concept relates to how much people of some (political) groups tend to like or dislike each other. Have a look at reference X or Y if you are interested in that topic. Here, we will use data from the french electoral study conducted during the campaing of the last presidential election and asking to each respondent to what extent they have sympathy for the people who vote for each party. We want to look at which groups of party supporters tend to be liked or dislike together.
+
+```{r}
+
+# Some recoding
+
+fes2022 <- fes2022 |>
+  rename(
+    symp_fi = fes3_QA07_A,
+    symp_eelv = fes3_QA07_B,
+    symp_ps = fes3_QA07_C,
+    symp_lrem = fes3_QA07_D,
+    symp_lr = fes3_QA07_E,
+    symp_rn = fes3_QA07_F,
+    symp_re = fes3_QA07_G
+  ) |>
+  mutate_at(vars(starts_with("symp"), eayy_i8),
+            ~ case_when(.x %in% c(0:10) ~ .x,
+                        TRUE ~ 5) |> as.numeric())
+```
+
+```{r}
+# Standard way to compute a correlation in R
+
+cor(fes2022$symp_fi, fes2022$symp_lrem)
+
+(affect_test <- cor.test(fes2022$symp_fi, fes2022$symp_lrem))
+
+affect_test |> tidy()
+
+fes2022 |> 
+  ggplot(aes(symp_fi, symp_lrem)) + 
+  geom_smooth()
+```
+
+### Multiple correlation with the `corrr` package
+
+Sometimes, we are not interested in the correlation of two variables but of many at the same time. To do this, we compute correlation matrices, which can be done with the `cor()` function that we have seen above. But, the `corrr` package comes with super handy functions to obtain, manipulate and visualize the results of correlations. You will need first to install the package and load it.
+
+I first create a subset of my dataset with only the variables measuring affective polarization towards different groups of voters.
+
+```{r}
+needs(corrr)
+
+(fes_affect <- fes2022 |> select(starts_with("symp")))
+
+(affect_matrix <- fes_affect |> correlate())
+```
+
+To make this more readable, we can also use the following to get the variables that are the most correlated with each others
+
+```{r}
+affect_matrix |> shave() |>
+    stretch(na.rm = T) |>
+    arrange(desc(r))
+```
+
+Calculating a correlation test for each pairwise correlation is a bit trickier but here an example of how you could proceed. We create first a function that will calculate a test between two variables and then we use the colpair_map function on our dataset to calculate all th
+
+```{r}
+calc_cor_test <- function(vec_a, vec_b) {
+  cor.test(vec_a, vec_b)$p.value
+}
+
+(tests <- colpair_map(fes_affect, calc_cor_test))
+
+tests |> 
+  shave() |> 
+  stretch(na.rm = T) |> 
+  mutate(significant = r < 0.05) |>
+  filter(significant == FALSE)
+```
+
+The only correlation that is not significant in our test is between the socialist party and republican. That means that there is no significant relationship between how people like or dislike those who vote for the Republicans and for the Socialsit Party.
+
+```{r}
+affect_matrix |> 
+  autoplot()
+
+affect_matrix |> 
+  network_plot(min_cor = .2)
+```
