@@ -1,11 +1,3 @@
-# 2023_intro_r
+# 2023- Introduction to R
 
-<!-- badges: start -->
-
-<!-- badges: end -->
-
-This is the repo of the programming class. 
-
-Each session has a dedicated folder organized as an R project where students can download the material for the session in their laptop. 
-
-The course is organized as a Quarto book that students can also visit on this \[website\](https://malo-jn.quarto.pub/introduction-to-r/) 
+This repository contains the course materials for the programming class of the research master's students in political science at Sciences Po. Each session has its own dedicated folder, organized as an R project, enabling students to easily download the session materials onto their laptops. The course is structured as a Quarto book, which students can also access on the [**website**](https://malo-jn.quarto.pub/introduction-to-r/).
