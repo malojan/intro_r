@@ -1,5 +1,7 @@
-
 ## Dealing with NAs
+
+-   Jens' class : help with the final papers
+
 
 ```{r}
 elec |> 

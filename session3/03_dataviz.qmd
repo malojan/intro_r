@@ -7,6 +7,10 @@
 ::: justify
 # Data vizualisation
 
+-   Why dataviz
+-   The grammar of graphics
+-   Learning how to make ggplot graphs
+-   Practice
 In this session, you will learn how to create graphs. Data visualization serves two primary purposes: data exploration and communication.
 
 1.  Exploration and description

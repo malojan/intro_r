@@ -1,0 +1,14 @@
+# Ressources
+
+- [R for Data Science](https://r4ds.hadley.nz/) 
+- [Telling stories with data](https://tellingstorieswithdata.com/) 
+- [Computational analysis of communication](http://cssbook.net/content/chapter01.html) 
+- [What They Forgot to Teach You About R](https://rstats.wtf/)
+- [Introduction to R](https://bookdown.org/f_lennert/introduction-to-r/), by Felix Lennert
+-   Max Blackwell's Harvard [course](https://mattblackwell.github.io/gov2002-book/) on statistical inference with R for a more technical introduction.
+- [Building reproducible analytical pipelines with R](https://raps-with-r.dev/)
+- [Introduction à R et au tidyverse](https://juba.github.io/tidyverse/)
+- [Guide pour l’analyse de données d’enquêtes avec R](https://larmarange.github.io/guide-R/)
+- [Tidy data article by Hadley Wickham](https://www.jstatsoft.org/article/view/v059i10)
+- For IR students : Federica Genovese' [Syllabus](https://federica-genovese.com/downloads/Syllabus_quant_it.pdf) on Quantitative Methods in R with different specialized articles and ressources
+

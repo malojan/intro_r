@@ -1,4 +1,4 @@
-# Rstudio, scripts, quarto 
+# Rstudio, scripts, quarto
 
 ## How Rstudio is organized
 
@@ -22,25 +22,14 @@ However, when we interact with R, we rarely use the console to type code. Instea
 
 ## Quarto
 
-While many individuals opt for R scripts for coding, I won't extensively employ them in this class. Instead, I'll be utilizing Quarto documents. You will also be utilizing Quarto as I'll be requesting you to submit your assignments using this format. Quarto constitutes a method of cohesively editing code and text within a single document, a practice termed literate programming. It enables you to compose code, generate output, conduct analyses in the same document, format the content, and subsequently export it to diverse formats like Word documents, PDFs and html. Additionally, Quarto facilitates the creation of slides, dashboards, books, and websites. Personally, I employ Quarto to craft the course materials.
+While many users opt for R scripts for coding, I won't extensively employ them in this class. Instead, I'll be using Quarto documents. You will also be using Quarto as I'll be requesting you to submit your assignments using this format. Quarto constitutes a method of cohesively editing code and text within a single document, a practice termed literate programming. It enables you to compose code, generate output, conduct analyses in the same document, format the content, and subsequently export it to diverse formats like Word documents, PDFs and html. Additionally, Quarto facilitates the creation of slides, dashboards, books, and websites. Personally, I employ Quarto to craft the course materials.
 
-To create a quarto document, click on `File > New File > Quarto Document` in the menu bar. You will see different options appear but for now, uncheck `use virtual markdown editor` and click on create an empty document. There are three main differences with an R script : 
+To create a quarto document, click on `File > New File > Quarto Document` in the menu bar. You will see different options appear but for now, uncheck `use virtual markdown editor` and click on create an empty document. There are three main differences with an R script :
 
-- **YAML** : when you open a quarto document you will have to fill the top matter, called a call a `YAML` which is separated by `---` where you can write different informations and options such as the title, the author, subtitle, abstract, the data and many other things. You can also choose the format of the output by writing `format:` and choosing among `html`, `docx` or `pdf`.
-- You can type text without the `#` as if you where typing in any text editor
-- To write code, you need to create what we call a chunk. For this, either go on the menu bar : `Code > Insert Chunk` or `option + Cmd + i` in macOs, `Ctrl+Alt+i` on Windows/Linux. You can then directly type code in that chunk.
+-   **YAML** : when you open a quarto document you will have to fill the top matter, called a call a `YAML` which is separated by `---` where you can write different informations and options such as the title, the author, subtitle, abstract, the data and many other things. You can also choose the format of the output by writing `format:` and choosing among `html`, `docx` or `pdf`.
+-   You can type text without the `#` as if you where typing in any text editor
+-   To write code, you need to create what we call a chunk. For this, either go on the menu bar : `Code > Insert Chunk` or `option + Cmd + i` in macOs, `Ctrl+Alt+i` on Windows/Linux. You can then directly type code in that chunk.
 
 ![](figures/chunk.png)
 
-To generate a pdf/html/word document, you need to click on Render (`Cmd + Shift + K` in macOs, `Ctrl+Shift+K` in Windows). A new file will appear in your files pane with the output. 
-
-## R projects
-
-
-The concept of working directory : place where R look for and save the files we use.
-
-```{r}
-getwd()
-```
-
-Use R projects, the idea is that when you want to conduct a new data analysis project, you create an R project.
+To generate a pdf/html/word document, you need to click on Render (`Cmd + Shift + K` in macOs, `Ctrl+Shift+K` in Windows). A new file will appear in your files pane with the output.
