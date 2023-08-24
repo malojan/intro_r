@@ -28,7 +28,7 @@ Looking at it practically, these skills are really valuable in the job market. I
 
 library(tidyverse)
 
-read_csv(here::here("session1", "data", "ggtrend_datascience.csv")) |> 
+read_csv(here::here("data", "ggtrend_datascience.csv")) |> 
   janitor::clean_names() |> 
   mutate(month = ym(mois), 
          num = data_science_dans_tous_les_pays) |> 

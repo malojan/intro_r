@@ -29,6 +29,7 @@ book:
 
   appendices: 
     - appendices/functions.qmd
+    - appendices/ressources.qmd
 
 
 bibliography: references.bib
