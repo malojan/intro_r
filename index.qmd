@@ -1,0 +1,29 @@
+# Course content {.unnumbered}
+
+This is an introduction to programming with R and Rstudio designed for political science students. The goal of this class is to familiarize students with the R programming language and its applications in data analysis, emphasizing its relevance to social science research. In this course, you will learn how to manipulate quantitative data, compute descriptive statistics, create data visualizations, and build statistical models. You will apply the main concepts you have learned in the quantitative methods class. This course only provides you with the basics, the resources and the motivation to learn more on your own, to continue in the next semester, and to apply quantitative methods in your research. This class does not require any prior programming experience, and it is designed for complete beginners.
+
+## Outline of the course
+
+- Session 1 : Getting started with R and Rstudio
+
+Students will be introduced to the R language and the RStudio interface. The session covers fundamental R concepts including vectors, objects, functions, packages, and data frames. We'll also explore literate programming using Quarto,  data import, and ways to troubleshoot common errors.
+
+- Session 2 : Manipulating and describing data
+
+This session dives into data handling with R. Students will learn to select variables, filter observations, and compute descriptive statistics using the dplyr package. We will also delve into structuring data appropriately and combining data frames
+
+- Session 3 : Visualizing data
+
+The third session will focus on data visualization in R using ggplot. Students will grasp the principles of the 'grammar of graphics' and learn to create a variety of commonly used plots.
+
+- Session 4 : Testing relationships
+
+In this session, we will place a special emphasis on bivariate relationships. We will ll delve into statistical testing methods, employing tools like t-tests, chi-squared tests, and correlation analyses. Subsequently, we will learn how to construct simple linear regression models in R, manipulate their output to assess results, and evaluate their fit
+
+- Session 5 : Cleaning data
+
+Before conducting analysis, it's essential to 'clean' our data. This session centers on preparing data for modeling, encompassing tasks such as recoding variables, addressing missing values (NAs), computing indices, and processing strings.
+
+- Session 6 : Multivariate analysis
+
+The final session focuses on multivariate regression analysis. We will explore how to run these models in R and compute their diagnostics. Additionally, we'll introduce the concept of functional programming, enabling the simultaneous running of multiple models.

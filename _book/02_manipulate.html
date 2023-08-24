@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Introduction to R - 3&nbsp; Manipulating data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./03_dataviz.html" rel="next">
+<link href="./01_getting_started.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulating data</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Introduction to R</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_getting.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Setting up R and Rstudio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_getting_started.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_manipulate.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulating data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_dataviz.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data vizualisation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Appendices</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ressources.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Ressources</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./functions.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Useful functions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction-to-dplyr-functions" id="toc-introduction-to-dplyr-functions" class="nav-link active" data-scroll-target="#introduction-to-dplyr-functions"><span class="toc-section-number">3.1</span>  Introduction to dplyr functions</a>
+  <ul class="collapse">
+  <li><a href="#count" id="toc-count" class="nav-link" data-scroll-target="#count"><span class="toc-section-number">3.1.1</span>  <code>count()</code></a></li>
+  <li><a href="#filter" id="toc-filter" class="nav-link" data-scroll-target="#filter"><span class="toc-section-number">3.1.2</span>  <code>filter()</code></a></li>
+  </ul></li>
+  <li><a href="#select-columns" id="toc-select-columns" class="nav-link" data-scroll-target="#select-columns"><span class="toc-section-number">3.2</span>  Select columns</a></li>
+  <li><a href="#group_by-and-summarize" id="toc-group_by-and-summarize" class="nav-link" data-scroll-target="#group_by-and-summarize"><span class="toc-section-number">3.3</span>  Group_by and summarize</a></li>
+  <li><a href="#mutate" id="toc-mutate" class="nav-link" data-scroll-target="#mutate"><span class="toc-section-number">4</span>  Mutate</a></li>
+  <li><a href="#sliceslice_max" id="toc-sliceslice_max" class="nav-link" data-scroll-target="#sliceslice_max"><span class="toc-section-number">5</span>  Slice/Slice_max</a></li>
+  <li><a href="#rename" id="toc-rename" class="nav-link" data-scroll-target="#rename"><span class="toc-section-number">6</span>  Rename</a></li>
+  <li><a href="#lag" id="toc-lag" class="nav-link" data-scroll-target="#lag"><span class="toc-section-number">7</span>  Lag</a>
+  <ul class="collapse">
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="toc-section-number">7.1</span>  Exercise</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulating data</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>At this point, you are now able to import a data file into Rstudio and quickly explore the structure of the dataset, which is usually the first step in any analysis. If the dataset is well-structured, we then need to carry out a very important operation, which we’ll see how to do in R: manipulate the data to obtain the information we want. In many cases, we’re not interested in the whole dataset; we want to select specific variables, analyze only certain groups and see how these variables vary according to these groups.</p>
+<p>With R, there are several ways to perform these operations. Firstly, you can use R’s basic functions, without having to load a specific package. An alternative approach is based on the tidyverse, a package suite developed by <a href="https://en.wikipedia.org/wiki/Hadley_Wickham">Hadley Wickham</a> with a special syntax. Here, we’ll concentrate on the tidyverse functions, which I feel are easier and more intuitive to use.</p>
+<p>The tidyverse relies extensively on what is called “the pipe” : <code>&gt;</code>. Depending on the version of R, you might also have this one <code>%&gt;%</code>. There are a few differences between the two but at this stage, it is not really important. You will quickly understand what the pipe is, we use it to chain instructions just as in a recipe.</p>
+<section id="introduction-to-dplyr-functions" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="introduction-to-dplyr-functions"><span class="header-section-number">3.1</span> Introduction to dplyr functions</h2>
+<p>To manipulate data, we will utilize a package from the tidyverse called dplyr, comprising a comprehensive suite of exceptionally useful functions. To familiarize ourselves with its usage, we will explore the <a href="gu.se/en/quality-government/qog-data/data-downloads/environmental-indicators-dataset">Quality of Government Environmental Indicators</a> dataset. To do this, we will need first to load the tidyverse and find the data online. To ensure reproducibility, you can directly download the file in your laptop from R with the <code>download.file()</code> function which two arguments : the url of the dataset and the path you want to save it. Then, we import the data<code>.dta</code> format using the <code>haven</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the tidyverse</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.2     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+✔ purrr     1.0.1     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the QOG dataset directly from R</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://www.qogdata.pol.gu.se/data/qog_ei_ts_sept21.dta"</span>, <span class="at">destfile =</span> <span class="st">"data/qog_env.dta"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Import the qog environment dataset</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>qog <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_dta</span>(<span class="st">"data/qog_env.dta"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="count" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="count"><span class="header-section-number">3.1.1</span> <code>count()</code></h3>
+<p>From Exercise 1, we saw that the qog dataset has a country-year structure. For each country, we have a series of indicators with one value per year. the <code>qog</code> dataset has a <code>year</code> variable and a <code>country</code> variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>qog <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 75 × 2
+    year     n
+   &lt;dbl&gt; &lt;int&gt;
+ 1  1946    75
+ 2  1947    76
+ 3  1948    82
+ 4  1949    85
+ 5  1950    88
+ 6  1951    88
+ 7  1952    89
+ 8  1953    89
+ 9  1954    91
+10  1955    94
+# ℹ 65 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>qog <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(year, cname)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 11,722 × 3
+    year cname                                n
+   &lt;dbl&gt; &lt;chr&gt;                            &lt;int&gt;
+ 1  1946 Afghanistan                          1
+ 2  1946 Albania                              1
+ 3  1946 Andorra                              1
+ 4  1946 Antigua and Barbuda                  1
+ 5  1946 Argentina                            1
+ 6  1946 Australia                            1
+ 7  1946 Belgium                              1
+ 8  1946 Bhutan                               1
+ 9  1946 Bolivia (Plurinational State of)     1
+10  1946 Brazil                               1
+# ℹ 11,712 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="filter" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="filter"><span class="header-section-number">3.1.2</span> <code>filter()</code></h3>
+<p>We may want to use only a subset of countries and get a smaller versions of the dataset. And the tiverse has one for this, which is called filter. We want to select specific rows/observations of the dataset based on a specific conditions. To filter, we will use extensively boolean operators.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>==</code></td>
+<td>equal</td>
+</tr>
+<tr class="even">
+<td><code>!=</code></td>
+<td>not equal</td>
+</tr>
+<tr class="odd">
+<td><code>&lt;</code></td>
+<td>less than</td>
+</tr>
+<tr class="even">
+<td><code>&lt;=</code></td>
+<td>less than or equal</td>
+</tr>
+<tr class="odd">
+<td><code>&gt;</code></td>
+<td>greater than</td>
+</tr>
+<tr class="even">
+<td><code>&gt;=</code></td>
+<td>greater than or equal</td>
+</tr>
+<tr class="odd">
+<td><code>|</code></td>
+<td>or</td>
+</tr>
+<tr class="even">
+<td><code>!</code></td>
+<td>not</td>
+</tr>
+<tr class="odd">
+<td><code>%in%</code></td>
+<td>in the set</td>
+</tr>
+</tbody>
+</table>
+<p>For instance, I might be only interested in environmental indicators for France. In that case I could filter the whole dataset with only the observations that has France as country variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>qog <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cname <span class="sc">==</span> <span class="st">"France"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 75 × 414
+   cname  ccode  year cname_qog      ccode_qog ccodealp ccodealp_year ccodecow
+   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;dbl&gt;
+ 1 France   250  1963 France (1963-)       250 FRA      FRA63              220
+ 2 France   250  1964 France (1963-)       250 FRA      FRA64              220
+ 3 France   250  1965 France (1963-)       250 FRA      FRA65              220
+ 4 France   250  1966 France (1963-)       250 FRA      FRA66              220
+ 5 France   250  1967 France (1963-)       250 FRA      FRA67              220
+ 6 France   250  1968 France (1963-)       250 FRA      FRA68              220
+ 7 France   250  1969 France (1963-)       250 FRA      FRA69              220
+ 8 France   250  1970 France (1963-)       250 FRA      FRA70              220
+ 9 France   250  1971 France (1963-)       250 FRA      FRA71              220
+10 France   250  1972 France (1963-)       250 FRA      FRA72              220
+# ℹ 65 more rows
+# ℹ 406 more variables: ccodevdem &lt;dbl&gt;, cname_year &lt;chr&gt;, version &lt;chr&gt;,
+#   act_act &lt;dbl&gt;, as_rifr &lt;dbl&gt;, as_ws &lt;dbl&gt;, bti_envc &lt;dbl&gt;, ccci_coop &lt;dbl&gt;,
+#   ccci_em &lt;dbl&gt;, ccci_fin &lt;dbl&gt;, ccci_kyoto &lt;dbl&gt;, ccci_rep &lt;dbl&gt;,
+#   ccci_unfccc &lt;dbl&gt;, cckp_rain &lt;dbl&gt;, cckp_temp &lt;dbl&gt;, ccl_exepp &lt;dbl&gt;,
+#   ccl_leglp &lt;dbl&gt;, ccl_lpp &lt;dbl&gt;, ccl_mitlpp &lt;dbl&gt;, ccl_nexep &lt;dbl&gt;,
+#   ccl_nlegl &lt;dbl&gt;, ccl_nlp &lt;dbl&gt;, ccl_nmitlp &lt;dbl&gt;, edgar_bc &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>Here, see that the tidyverse functions are a bit clearer that what you could do directly with R base functions. To do the same, here an example of what we would have done :</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>qog[qog<span class="sc">$</span>cname <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"France"</span>), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 75 × 414
+   cname  ccode  year cname_qog      ccode_qog ccodealp ccodealp_year ccodecow
+   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;dbl&gt;
+ 1 France   250  1963 France (1963-)       250 FRA      FRA63              220
+ 2 France   250  1964 France (1963-)       250 FRA      FRA64              220
+ 3 France   250  1965 France (1963-)       250 FRA      FRA65              220
+ 4 France   250  1966 France (1963-)       250 FRA      FRA66              220
+ 5 France   250  1967 France (1963-)       250 FRA      FRA67              220
+ 6 France   250  1968 France (1963-)       250 FRA      FRA68              220
+ 7 France   250  1969 France (1963-)       250 FRA      FRA69              220
+ 8 France   250  1970 France (1963-)       250 FRA      FRA70              220
+ 9 France   250  1971 France (1963-)       250 FRA      FRA71              220
+10 France   250  1972 France (1963-)       250 FRA      FRA72              220
+# ℹ 65 more rows
+# ℹ 406 more variables: ccodevdem &lt;dbl&gt;, cname_year &lt;chr&gt;, version &lt;chr&gt;,
+#   act_act &lt;dbl&gt;, as_rifr &lt;dbl&gt;, as_ws &lt;dbl&gt;, bti_envc &lt;dbl&gt;, ccci_coop &lt;dbl&gt;,
+#   ccci_em &lt;dbl&gt;, ccci_fin &lt;dbl&gt;, ccci_kyoto &lt;dbl&gt;, ccci_rep &lt;dbl&gt;,
+#   ccci_unfccc &lt;dbl&gt;, cckp_rain &lt;dbl&gt;, cckp_temp &lt;dbl&gt;, ccl_exepp &lt;dbl&gt;,
+#   ccl_leglp &lt;dbl&gt;, ccl_lpp &lt;dbl&gt;, ccl_mitlpp &lt;dbl&gt;, ccl_nexep &lt;dbl&gt;,
+#   ccl_nlegl &lt;dbl&gt;, ccl_nlp &lt;dbl&gt;, ccl_nmitlp &lt;dbl&gt;, edgar_bc &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>You could also filter by all of the countries that are NOT France</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>qog <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cname <span class="sc">!=</span> <span class="st">"France"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(cname)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 203 × 2
+   cname                   n
+   &lt;chr&gt;               &lt;int&gt;
+ 1 Afghanistan            75
+ 2 Albania                75
+ 3 Algeria                58
+ 4 Andorra                75
+ 5 Angola                 45
+ 6 Antigua and Barbuda    75
+ 7 Argentina              75
+ 8 Armenia                29
+ 9 Australia              75
+10 Austria                66
+# ℹ 193 more rows</code></pre>
+</div>
+</div>
+<p>Or you would try with different countries. In that case, you can use <code>%in%</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>qog_subset <span class="ot">&lt;-</span> qog <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    cname <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">"France"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Norway"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Spain"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Denmark"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>But we also want to store the data to manipulate it and so it is easier to create an object</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>qog_subset <span class="ot">&lt;-</span> qog <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    cname <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">"France"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Norway"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Spain"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Denmark"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Netherlands"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Poland"</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Russia"</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Saudi Arabia"</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">"India"</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    year <span class="sc">&gt;</span> <span class="dv">1990</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>qog_subset <span class="sc">|&gt;</span> <span class="fu">view</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="select-columns" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="select-columns"><span class="header-section-number">3.2</span> Select columns</h2>
+<p>Now we want to select one or two variables we are interested in to do some analysis. The select function from the tidyverse is useful to select specifics variables/columns from our dataframe</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>qog_co2 <span class="ot">&lt;-</span> qog_subset <span class="sc">|&gt;</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(cname, year,  wdi_co2)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>qog_co2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 269 × 3
+   cname    year wdi_co2
+   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Denmark  1991   11.7 
+ 2 Denmark  1992   10.5 
+ 3 Denmark  1993   11.0 
+ 4 Denmark  1994   11.7 
+ 5 Denmark  1995   10.9 
+ 6 Denmark  1996   13.7 
+ 7 Denmark  1997   11.6 
+ 8 Denmark  1998   11.2 
+ 9 Denmark  1999   10.4 
+10 Denmark  2000    9.61
+# ℹ 259 more rows</code></pre>
+</div>
+</div>
+<p>Here if you look at the dataframe, it irs order by country and they year, but we could want to see how it changes by country each year easily by arranging our dataframe.</p>
+<p>Here we see that there are NA, because the dataset do not provide co2 per capita in 1946. We could remove these rows with NA</p>
+<p>See in our environment pane how it changes</p>
+</section>
+<section id="group_by-and-summarize" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="group_by-and-summarize"><span class="header-section-number">3.3</span> Group_by and summarize</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>qog_co2 <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cname) <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_co2 =</span> <span class="fu">mean</span>(wdi_co2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 2
+  cname        mean_co2
+  &lt;chr&gt;           &lt;dbl&gt;
+1 Denmark            NA
+2 France             NA
+3 India              NA
+4 Netherlands        NA
+5 Norway             NA
+6 Poland             NA
+7 Russia             NA
+8 Saudi Arabia       NA
+9 Spain              NA</code></pre>
+</div>
+</div>
+<p>Does not work, why ? Because we have some NA and the mean do not understand so you have to change</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>qog_co2 <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cname) <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_co2 =</span> <span class="fu">mean</span>(wdi_co2, <span class="at">na.rm =</span> T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 2
+  cname        mean_co2
+  &lt;chr&gt;           &lt;dbl&gt;
+1 Denmark          9.31
+2 France           5.82
+3 India            1.15
+4 Netherlands     10.9 
+5 Norway           8.94
+6 Poland           8.29
+7 Russia          11.5 
+8 Saudi Arabia    16.0 
+9 Spain            6.46</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>qog_co2 <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cname) <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_co2 =</span> <span class="fu">mean</span>(wdi_co2, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span> </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mean_co2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 2
+  cname        mean_co2
+  &lt;chr&gt;           &lt;dbl&gt;
+1 Saudi Arabia    16.0 
+2 Russia          11.5 
+3 Netherlands     10.9 
+4 Denmark          9.31
+5 Norway           8.94
+6 Poland           8.29
+7 Spain            6.46
+8 France           5.82
+9 India            1.15</code></pre>
+</div>
+</div>
+<p>Here we see that on average, the Saudi Arabia, Russia have the highest on the period.</p>
+<p>We would also wonder which year the emission have been the highest</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>qog_co2 <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">|&gt;</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_co2 =</span> <span class="fu">mean</span>(wdi_co2, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span> </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mean_co2)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 30 × 2
+    year mean_co2
+   &lt;dbl&gt;    &lt;dbl&gt;
+ 1  2006     9.25
+ 2  1993     9.19
+ 3  2008     9.13
+ 4  1992     9.08
+ 5  2004     9.03
+ 6  2010     9.01
+ 7  2015     8.95
+ 8  2005     8.91
+ 9  1994     8.90
+10  1996     8.88
+# ℹ 20 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="mutate" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Mutate</h1>
+</section>
+<section id="sliceslice_max" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Slice/Slice_max</h1>
+</section>
+<section id="rename" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Rename</h1>
+</section>
+<section id="lag" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Lag</h1>
+<p>Once we have imported our data, we usually have descriptive sumamry of what it looks like. There are many ways to do that.</p>
+<p>If you want a summary of all variables, you can test what the skimr function can do. You wan transform it as tibble to have a dataset with different things.</p>
+<section id="exercise" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="exercise"><span class="header-section-number">7.1</span> Exercise</h2>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./01_getting_started.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introduction</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./03_dataviz.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data vizualisation</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
