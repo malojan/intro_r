@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 87e8e86b-4fda-404b-9f37-d87ec24e1d63
+      url: 'https://malo-jn.quarto.pub/introduction-to-r'
