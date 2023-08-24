@@ -1,4 +1,6 @@
 
+# Introduction to R 
+
 This is the repo of the programming class. 
 
 Each session has a dedicated folder organized as an R project where students can download the material for the session in their laptop. 
