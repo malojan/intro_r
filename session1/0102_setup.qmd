@@ -1,7 +1,3 @@
----
-engine: knitr
----
-
 # Setting up R and Rstudio
 
 The objective of this course is to provide a practical dimension as a complement to the introductory course on quantitative methods by learning programming. To use these statistical methods, you will learn to code in a programming language called R and through a software called Rstudio. To get the first session off to a good start and avoid wasting too much time setting up, you will need to bring a laptop with R and Rstudio installed. This short tutorial explains how to do it. This should be fairly quick and will make it easier for you to keep track of the first session. If you have any issues to install these programs correctly, **please contact me before the first class**.

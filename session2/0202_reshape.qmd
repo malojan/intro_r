@@ -2,7 +2,7 @@
 
 The analysis of your data is usually not the part of your project that takes longer : it is data wrangling. Your data have to be cleaned in order to be analyzed. This mean that you have a *tidy* datasets. Here we focus how we can combine and reshape different datasets in order to use them properly.
 
-Here, I am interested in the polling of different political parties. 
+Here, I am interested in the polling of different political parties.
 
 ```{r warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -84,6 +84,56 @@ polls |>
          fragm = if_else(year > 2015, TRUE, FALSE)) |>
   summarise(intention_mean = mean(intention, na.rm = TRUE),
             .by = c(country, fragm))
+```
+
+
+# Test with executive approval
+
+
+## Get executive approval
+
+```{r}
+pr_approval <- read_csv("https://raw.githubusercontent.com/malojan/executive_approval/main/data/president_approval_kantar.csv")
+
+pr_approval |> 
+  select(quarter)
+```
+
+```{r}
+gdp_fr <- read_tsv("session2/data/eurostat_gdp.tsv")
+
+head(gdp_fr)
+```
+
+```{r}
+gdp_clean <- gdp_fr |> 
+  janitor::clean_names() |> 
+  pivot_longer(cols = -1, names_to = "quarter", values_to = "gdp") |> 
+  select(-1) |> 
+  mutate(quarter = str_replace(quarter, "_q", "\\.") |> str_remove("x") |> as.numeric()) |> 
+  summarise(gdp_mean = mean(gdp), .by = quarter) |> 
+  mutate(gdp_growth = (gdp_mean - lag(gdp_mean))/lag(gdp_mean))
+
+view(pr_approval)
+gdp_clean |> 
+  ggplot(aes(quarter, gdp_growth)) +
+  geom_point() +
+  geom_smooth()
+
+pr_gdp <- pr_approval |> 
+    filter(approval == "trust_yes") |> 
+  left_join(gdp_clean, by = "quarter") |> 
+  arrange(quarter) |> 
+  summarise(share_evol = share - lag(share), .by = name,
+            gdp_growth, quarter) 
+
+pr_gdp
+
+pr_gdp |> 
+  ggplot(aes(gdp_growth, share_evol)) + 
+  geom_point() +
+  geom_smooth()
 
 
 ```
+

@@ -195,7 +195,6 @@ mean(vox_regions, na.rm = TRUE) # Remove NA before computing the mean
 
 ## Packages and libraries
 
-
 The functions we've discussed so far, such as `sum()` and `mean()`, come from base R. These are pre-loaded functions available immediately upon starting R. However, many functions you'll encounter aren't part of base R but instead belong to specific packages that individuals or groups have developed. You can think of packages as collections of functions crafted to simplify certain tasks or to introduce new capabilities to R. For example, there's the `tidyverse` package, which I asked you to install before the class
 
 To install a package in R, you can use the `install.packages()` function, passing the name of the package in quotation marks (either single or double). I recommend doing this installation in the console since you don't need to save this step; it's a one-time action. However, every time you start your script or Quarto document, you'll need to load the package. To do this, use the `library()` function, providing the package name as an argument, but without the quotation marks.

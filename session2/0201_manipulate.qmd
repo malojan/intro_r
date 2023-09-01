@@ -1,16 +1,10 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
 # Manipulating data
 
 At this point, you are now able to import a data file into Rstudio and quickly explore the structure of the dataset, which is usually the first step in any analysis. If the dataset is well-structured, we then need to carry out a very important operation, which we'll see how to do in R: manipulate the data to obtain the information we want. In many cases, we're not interested in the whole dataset; we want to select specific variables, analyze only certain groups and see how these variables vary according to these groups.
 
-With R, there are several ways to perform these operations. Firstly, you can use R's basic functions, without having to load a specific package. An alternative approach is based on the tidyverse, the package suite developed by [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham) with a special syntax. Here, we'll concentrate on the tidyverse functions, which I feel are easier and more intuitive to use.
+With R, there are several ways to perform these operations. Firstly, you can use R's basic functions, without having to load a specific package. An alternative approach is based on the `tidyverse`, the package suite developed by [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham) with a special syntax. Here, we'll concentrate on the \`tidyverse\`\` functions, which I feel are easier and more intuitive to use.
 
-The tidyverse relies extensively on what is called "the pipe" : `>`. Depending on the version of R, you might also have this one `%>%`. There are a few differences between the two but at this stage, it is not really important. You will quickly understand what the pipe is, we use it to chain instructions just as in a recipe.
+The `tidyverse` relies extensively on what is called "the pipe" : `>`. Depending on the version of R, you might also have this one `%>%`. There are a few differences between the two but at this stage, it is not really important. You will quickly understand what the pipe is, we use it to chain instructions just as in a recipe.
 
 ## Introduction to dplyr functions
 
@@ -36,13 +30,7 @@ qog <- haven::read_dta("data/qog_env.dta")
 Once we have imported our data, we usually have descriptive sumamry of what it looks like. There are many ways to do that.
 
 ```{r}
-colnames(qog, 1)
-```
-
-Find a way to also use table() or summary() \`
-
-```{r}
-table(qog$iead_eif1)
+colnames(qog)
 ```
 
 ### `count()`
@@ -94,7 +82,9 @@ You could also filter by all of the countries that are NOT France
 
 ```{r}
 qog |> 
+  # Keep only countries that are not France
   filter(cname != "France") |> 
+  # Count the number of observations for each country
   count(cname)
 ```
 
@@ -107,13 +97,15 @@ qog |>
       "France",
       "Norway",
       "Spain",
-      "Denmark"))
+      "Denmark")) |> 
+  count(cname)
 ```
 
 But we also want to store the data to manipulate it and so it is easier to create an object.
 
 ```{r}
 (qog_subset <- qog |>
+   # Keep only the following countries
   filter(
     cname %in% c(
       "France",
@@ -126,74 +118,125 @@ But we also want to store the data to manipulate it and so it is easier to creat
       "Saudi Arabia",
       "India"
     ),
+    # Keep only the observations that are after 1990
     year > 1990
   ))
 
+```
+
+## Subset rows with \`slice()\`\`
+
+You can also subset rows by their positions using `slice()`.
+
+```{r}
+qog_subset |> slice(5:7) # Subset only rows 5 to 7
 ```
 
 ## `select()` variables
 
 While `filter()` is useful for keeping only certain groups of rows, `select()` is used, as its name suggests, to select certain variables (columns) from our dataframe.
 
-Let's say I'm interested in CO2 emissions per capita, their overall level and how they vary over time and by country. For this, I need only three variables that are present in the dataset: `year`, `cname` and the variable `wdi_co2` which comes from the [World Bank's World Development Indicators](https://databank.worldbank.org/source/world-development-indicators). To do this, I use `select()` and just specify which variables of the dataset I want to select.
+Let's say I'm interested in CO2 emissions per capita, their overall level and how they vary over time and by country. For this, I would need only three variables that are present in the dataset: `year`, `cname` and the variable `wdi_co2` which comes from the [World Bank's World Development Indicators](https://databank.worldbank.org/source/world-development-indicators). To do this, I use `select()` and just specify which variables of the dataset I want to select.
 
 ```{r}
-qog_co2 <-qog_subset |> 
+qog_subset |> 
   select(cname, year,  wdi_co2)
-
-qog_co2
 ```
 
-The functions offer a lot of possibilities :
+The `select()` functions offer a lot of possibilities to select variable based on certain patterns by adding functions inside such as `starts_with()`, `ends_with()`, `contains()`. You can learn more by typing `?select`.
 
 ```{r}
-qog_subset |> select(cname, year, starts_with("wdi"))
+qog_wdi <-qog_subset |> 
+  # Select the country, the year and every variable that starts with wdi. 
+  select(cname, year, starts_with("wdi"))
+
+# Look at which columns we have in our dataset
+
+qog_wdi |> colnames()
+
+# Select all of the variable that do not starts with wdi
+
+qog_wdi |> select(-starts_with("wdi")) |> colnames()
+
+# Select column by position (from 1 to 5)
+
+qog_wdi |> select(1:5) |> colnames()
+
+qog_wdi |> 
+  # Select only the variables that have character as type
+  select_if(is.character) |> 
+  # Look at which columns we have in our dataset
+  colnames()
+```
+
+## Change column names with `rename()`
+
+Occasionally, you may encounter datasets with columns named in a non-meaningful manner, such as v5, x45, or Q234, often representing variable identifiers from surveys. To enhance the understanding of the variables' meanings, it can prove beneficial to rename these columns using the rename() function. In our current dataset, the variable names are already quite informative. However, for the purpose of this illustration, let's rename the 'cname' variable as 'country', offering a more explicit label.
+
+```{r}
+qog_wdi |> 
+  # Rename the variable cname as country
+  rename(country = cname) |> 
+  colnames()
 ```
 
 ## Calculating statistics by group with `.by` and `summarise()`
 
-To compute a first set of descriptive statistics, we could look at the central indicators of the co2 emissions su
+To compute a first set of descriptive statistics, we could look at the central indicators of the co2 emissions variable (`wdi_co2`).
 
 ```{r}
-mean(qog_co2$wdi_co2)
+mean(qog_wdi$wdi_co2, na.rm = TRUE) # Compute the mean
+median(qog_wdi$wdi_co2, na.rm = TRUE) # Compute the median
+sd(qog_wdi$wdi_co2, na.rm = TRUE) # Compute the standard deviation
+quantile(qog_wdi$wdi_co2, na.rm = T) # Compute the quantiles
 ```
 
-Does not work, why ? Because we have some NA and the mean do not understand so you have to change
+However, we are often interested in how these indicators vary across groups such as country or year. To do so, use the `summarise()` function in R that allows you to compute new variables by groups. To choose grouping variable, we use the argument `.by =`. Here I use this function to compute the mean, the median, the standard deviation and the first and third quartile of co2 emissions per capita for each country. This gives us a new tibble with all of the summary information.
 
 ```{r}
-mean(qog_co2$wdi_co2, na.rm = TRUE)
-median(qog_co2$wdi_co2, na.rm = TRUE)
-sd(qog_co2$wdi_co2, na.rm = TRUE)
-quantile(qog_co2$wdi_co2, na.rm = T)
-```
-
-```{r}
-#| output: asis
-qog_stats <- qog_co2 |> 
+(qog_stats <- qog_wdi |> 
   summarise(mean_co2 = mean(wdi_co2, na.rm = T), 
             median_co2 = median(wdi_co2, na.rm = T),
             sd_co2 = sd(wdi_co2, na.rm = T),
             q1 = quantile(wdi_co2, 0.25, na.rm = T),
             q3 = quantile(wdi_co2, 0.25, na.rm = T),
-            .by = cname)
+            .by = cname))
+```
 
+To get nice tables when you render your quarto document, you can use the `knitr::kable()` function.
+
+```{r}
+#| output: asis
 qog_stats |> knitr::kable()
 ```
 
-Here if you look at the dataframe, it irs order by country and they year, but we could want to see how it. Here we see that on average, the Saudi Arabia, Russia have the highest on the period.
+It is also possible to sort the results to gain a clearer idea of which countries have the highest average CO2 emissions per capita. To achieve this, we utilize the `arrange()` function, specifying the variable by which we intend to sort. By doing so, we observe that, on average, Saudi Arabia, Russia, and the Netherlands possess the highest carbon footprint per capita among the selected countries.
 
 ```{r}
 qog_stats |> 
-  arrange(desc(mean_co2))
+  arrange(-mean_co2)
+
+qog_stats |> 
+  arrange(mean_co2)
 ```
 
-We can also wonder when, on average, the level of emissions per capita was the lowest in Saudi Arabia. To do this, you need to group the dataframe by year and calculate the average. On average, we can observe that the level of CO2 emissions per capita was the lowest at the end of the 1990s, which raises questions about of their ability to reduce them!
+We might also consider when, on average, the per capita emissions levels were at their lowest in Saudi Arabia. To accomplish this, it is necessary to group the dataframe by year and compute the average values. We observe that the CO2 emissions per capita were at their minimum towards the late 1990s.
 
 ```{r}
-qog_co2 |> 
+qog_wdi |> 
+  # Keep only the country Saudi Arabia
   filter(cname == "Saudi Arabia") |> 
+  # Compute the mean of co2 emissions for each year
   summarise(mean_co2 = mean(wdi_co2, na.rm = T), .by = year) |> 
+  # Arrange the results 
   arrange(mean_co2) 
+```
+
+We can also compute descriptive statistics on several variables at the same time with a slighlty more difficult code.
+
+```{r}
+qog_wdi |> 
+  summarise(across(c(wdi_co2, wdi_fossil),~ mean(.x, na.rm = T)), .by = cname)
 ```
 
 ### Mutate
@@ -203,7 +246,7 @@ qog_co2 |>
 -   introduce the lag function
 
 ```{r}
-qog_growth <- qog_co2 |>
+qog_growth <- qog_wdi |>
   mutate(co2_lag = lag(wdi_co2),
          co2_growth = (wdi_co2 - co2_lag) / co2_lag, 
          .by = cname)
@@ -215,15 +258,6 @@ The `dplyr` package has also a lot a useful functions to get the most important 
 qog_growth |> 
   slice_max(co2_growth, n = 1)
 
-qog_growth |> 
-  slice_min(co2_growth, n = 1) |> 
-  knitr::kable()
-```
-
-# Formatting tables with knitr::kable()
-
-```{r}
-#| output: asis
 qog_growth |> 
   slice_min(co2_growth, n = 1) |> 
   knitr::kable()
