@@ -14,6 +14,30 @@ Another compelling reason for embracing a programming language for quantitative 
 
 Programming languages like R encourage you to write scripts detailing each step of your analysis. This approach renders your process explicit and easily shareable with others, ensuring that identical steps can be followed to reproduce your results. This is crucial as it offers greater transparency regarding the decisions you, as a quantitative researcher, make. Quantitative analysis entails numerous choices, including variable selection, recoding and decisions about retaining or discarding observations. By encapsulating all these processes in code that anyone can review, a sound practice is established. Coding also fosters reflection on the data manipulation process. Reviewing the code of others makes you more critical about their research.
 
+```{r}
+#| message: false
+#| echo: false
+
+library(tidyverse)
+
+replication <- read_csv("https://raw.githubusercontent.com/malojan/replication/master/data/polsci_replication.csv")
+replication |> 
+  filter(year < 2022) |> 
+  mutate(journal = str_to_upper(journal)) |> 
+  group_by(year, journal) |> 
+  count() |> 
+  ggplot(aes(year, n, color = journal, group = journal)) + 
+  geom_point() +
+  ggtitle("Number of papers having replication code in the top journals in political science") +
+  labs(caption = "Source : Harvard Dataverse") +
+  scale_x_continuous("Year") +
+  scale_y_continuous("Number of articles") +
+  geom_line() +
+  theme_light() + 
+  scale_color_viridis_d() 
+```
+
+
 ### Computational social sciences
 
 Computational social science (CSS) is an interdisciplinary field that employs computational tools, methodologies, and data to address questions relevant to the social sciences. It effectively merges the theories and insights of social sciences with the computational capabilities offered by computer science. The proliferation of digital data, the increasing computational power of computers, and advancements in artificial intelligence are opening numerous opportunities for the social sciences. Learning programming allows you to subsequently engage in web scraping to automatically gather data from the internet, creating new datasets that were previously nonexistent. Additionally, various models can be employed to analyze digital information encompassing text, images, and even audio. While this introductory class doesn't extensively cover these topics, it provides the essential programming skills necessary for implementing these novel techniques. Moreover, if you're enthusiastic about acquiring this knowledge, I can furnish you with various resources.
@@ -26,7 +50,6 @@ Looking at it practically, these skills are really valuable in the job market. I
 #| message: false
 #| echo: false
 
-library(tidyverse)
 
 read_csv(here::here("data", "ggtrend_datascience.csv")) |> 
   janitor::clean_names() |> 
