@@ -5,9 +5,10 @@ This repository contains the course materials for the programming class of the r
 
 | Session | Description | Course material |
 |---------|-------------|-------------|
-| Session 1 | Get started with R and Rstudio | [Slides](https://malo-jn.quarto.pub/introduction-to-r_slides1/#/title-slide), [code](https://github.com/malojan/intro_r/tree/main/session1),[zip](https://github.com/malojan/intro_r/blob/main/session1/session1.zip  |
+| Session 1 | Get started with R and Rstudio | [Slides](https://malo-jn.quarto.pub/introduction-to-r_slides1/#/title-slide), [code](https://github.com/malojan/intro_r/tree/main/session1),[zip](https://github.com/malojan/intro_r/raw/main/session1/session1.zip)  |
 | Session 2 | Manipulating data |  |
 | Session 3 | Data visualization |  |
 | Session 4 | Testing relationship |  |
 | Session 5 | Cleaning data | |
 | Session 6 | Modelling |  |
+
