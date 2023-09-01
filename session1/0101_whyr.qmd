@@ -37,7 +37,6 @@ replication |>
   scale_color_viridis_d() 
 ```
 
-
 ### Computational social sciences
 
 Computational social science (CSS) is an interdisciplinary field that employs computational tools, methodologies, and data to address questions relevant to the social sciences. It effectively merges the theories and insights of social sciences with the computational capabilities offered by computer science. The proliferation of digital data, the increasing computational power of computers, and advancements in artificial intelligence are opening numerous opportunities for the social sciences. Learning programming allows you to subsequently engage in web scraping to automatically gather data from the internet, creating new datasets that were previously nonexistent. Additionally, various models can be employed to analyze digital information encompassing text, images, and even audio. While this introductory class doesn't extensively cover these topics, it provides the essential programming skills necessary for implementing these novel techniques. Moreover, if you're enthusiastic about acquiring this knowledge, I can furnish you with various resources.
@@ -97,6 +96,4 @@ On the other hand, R boasts a more specialized statistical focus and proves to b
 
 6.  Multivariate analysis
 
-## Evaluation of this course
 
-To learn R, you have to practice. And this is why the evaluation will be based on regular exercises. At the end of each session, you will have to do an exercise that will be due before the following session. Each exercise will be graded on 4 points, which will give you a grade of 20 at the end of the semester.
