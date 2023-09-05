@@ -32,4 +32,4 @@ To create a quarto document, click on `File > New File > Quarto Document` in the
 
 ![](figures/chunk.png)
 
-To generate a pdf/html/word document, you need to click on Render (`Cmd + Shift + K` in macOs, `Ctrl+Shift+K` in Windows). A new file will appear in your files pane with the output.
+To generate a pdf/html/word document, you need to click on Render (`Cmd + Shift + K` in macOs, {\< kbd win=Shift-Ctrl-P \>}}). A new file will appear in your files pane with the output.

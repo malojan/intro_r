@@ -95,5 +95,3 @@ On the other hand, R boasts a more specialized statistical focus and proves to b
 5.  Cleaning data
 
 6.  Multivariate analysis
-
-

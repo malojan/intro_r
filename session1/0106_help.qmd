@@ -18,11 +18,18 @@ Every package in the tidyverse (and some others) has a cheatsheet filled with in
 
 First, understand that you're not alone in encountering errors in R; many before you have faced similar issues. Often, they've sought help online. So, if R gives you an error you don't comprehend, it's probable that someone else has faced it and discussed it online. Start by checking if others have posed similar questions. Sites dedicated to R programming often have solutions from experienced users. Additionally, Google can be a great ally. Whether you're trying to accomplish a task (e.g., "how to import a `.dta` file in R") or resolve an error, simply searching the error message or your query can yield valuable insights.
 
-Often, you'll find yourself on a site called [Stackoverflow](https://stackoverflow.com/), a community hub for users of various programming languages. You can often copy and paste the code you find there, but it's important to tweak and adapt it to fit your specific needs. Remember, in the world of programming, it's common for everyone to borrow and adapt code from others. Another helpful resource is the [Rstudio Commmunity](@https://community.rstudio.com/). Additionally, the [#rstats](https://twitter.com/search?q=%23rstats&src=hashtag_click) hashtag on Twitter can provide insights and discussions from the R programming community.
+Often, you'll find yourself on a site called [Stackoverflow](https://stackoverflow.com/), a community hub for users of various programming languages. You can often copy and paste the code you find there, but it's important to tweak and adapt it to fit your specific needs. Remember, in the world of programming, it's common for everyone to borrow and adapt code from others. Another helpful resource is the [Rstudio Commmunity](https://community.rstudio.com/). Additionally, the [#rstats](https://twitter.com/search?q=%23rstats&src=hashtag_click) hashtag on Twitter can provide insights and discussions from the R programming community.
 
 ## AI is your friend
 
-Lastly, we've entered the era of generative AI. When coding, Large Language Models, particularly [ChatGPT](https://chat.openai.com/), can swiftly emerge as invaluable allies. By supplying ChatGPT with your errors or seeking guidance for specific coding tasks, you can obtain outstanding results. I strongly suggest incorporating it into your coding journey. However, exercise caution: ChatGPT might sometimes suggest non-existent functions or present inaccurate information. It isn't a magic bullet. But you'll quickly discern the accuracy of the information because, if it's off the mark, the code won't execute correctly in R. Just have an look on this [example]((https://chat.openai.com/share/2ec0e8d3-905e-458b-b0c1-c21e7d0abf69)) where I asked it to explain how to import a stata file in R.
+Lastly, we've entered the era of generative AI. When coding, Large Language Models, particularly [ChatGPT](https://chat.openai.com/), can swiftly emerge as invaluable allies. By supplying ChatGPT with your errors or seeking guidance for specific coding tasks, you can obtain outstanding results. I strongly suggest incorporating it into your coding journey. However, exercise caution: ChatGPT might sometimes suggest non-existent functions or present inaccurate information. It isn't a magic bullet. But you'll quickly discern the accuracy of the information because, if it's off the mark, the code won't execute correctly in R. Just have an look on this [example](https://chat.openai.com/share/2ec0e8d3-905e-458b-b0c1-c21e7d0abf69) where I asked it to explain how to import a stata file in R.
+
+::: {.callout-note}
+## To go further
+
+You can also interact with ChatGPT directly in Rstudio. To to so, you will need to have an OpenAI account and install the [`askgpt`](https://github.com/JBGruber/askgpt) package developed by Johannes Gruber. It is not free, but still cheap. 
+
+:::
 
 ## Most common errors
 

@@ -1,3 +1,9 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+
 # R basics
 
 ## R as calculator
@@ -40,12 +46,7 @@ Try to do the same with the two main left-wing parties PSOE and Sumar who respec
 
 Solution:
 
-```{r}
-psoe_seats <- 121
-sumar_seats <- 31
-left_seats <- psoe_seats + sumar_seats
-majority-left_seats
-```
+
 
 </details>
 :::
@@ -63,6 +64,7 @@ The objects we used so far contained only one numeric value. However, what we mo
 We can generate vectors with `c()` which stands for "concatenate".
 
 ```{r}
+left_seats <- 121 + 31
 coalition_seats <- c(right_seats, left_seats)
 coalition_seats
 ```
