@@ -1,0 +1,81 @@
+---
+title: "Exercice 5"
+editor_options: 
+  chunk_output_type: console
+---
+
+In this exercice, we are interested in the drivers of attitudes towards gays and lesbian rights in Europe. For this, you will use the European Social Survey 9th wave. The data is available in the data folder. The dataset contains a variable `hmsacld` that measures to what extent respondents agreen with gays and lesbian couples right to adopt children. Further information about the variables can be found in the codebook.
+
+1.  Import the European Social Survey 8th wave from the data folder
+
+```{r}
+needs(tidyverse, haven)
+
+ess <- read_dta("data/ess8.dta")
+```
+
+2.  Recode the variable `gndr` in order to have a factor variable with Male and Female rather than the values 1 and 2.
+
+```{r}
+ess |> 
+  count(gndr)
+
+ess <- ess |> 
+  mutate(gndr = labelled::unlabelled(gndr))
+
+ess |> 
+  count(gndr)
+```
+
+3.  Look at the relationship between `hmsacld` and `lrscale` visually. Interpret the results
+
+```{r}
+
+ess |> 
+  count(hmsacld)
+
+ess |> 
+  count(lrscale)
+
+ess |> 
+  ggplot(aes(lrscale, hmsacld)) +
+  geom_point() +
+  geom_smooth()
+```
+
+4.  Look at the relationship between `hmsacld` and `gndr` visually. Interpret the results.
+
+```{r}
+ess |> 
+  drop_na(gndr) |> 
+  group_by(hmsacld) |> 
+  count(gndr) |> 
+  mutate(share = n/sum(n)*100) |> 
+  ggplot(aes(hmsacld, share, fill = as.factor(gndr))) +
+  geom_col()
+```
+
+5.  Estimate two linear models to predict `hmsacld` using `lrscale` and `gndr` respectively. Interpret the strength, direction and significance of the relationship between the predictors and the outcome variable.
+
+```{r}
+model1 <- lm(hmsacld ~ lrscale, data = ess)
+
+model2 <- lm(hmsacld ~ gndr, data = ess)
+
+model3 <- lm(hmsacld ~ gndr + lrscale, data = ess)
+
+summary(model1)
+
+stargazer::stargazer(model1, model2, model3, type = "text")
+```
+
+-   Our coefficient for lrscale in model1 is statistically significant and has the value of 0.1. This means that when moving of 1 point to the right on the left-right scale, the opposition to gays and lesbian rights increases by 0.1 points.
+-   Our coefficient for gndrFemale in model2 is statistically significnant and has the value of -0.2. This means that being a woman rather than a man decreases the opposition to gays and lesbian rights by 0.2 points.
+
+6.  Compare the variance explained by the two models.
+
+To compare the variance of the models, we have to look at the R2. The R2 of model1 is 0.024 and the R2 of model2 is 0.005. This means that model1 explains more variance than model2. However, both models still explain little variance.
+
+```{r}
+
+```

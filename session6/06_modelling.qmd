@@ -1,0 +1,435 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Multivariate Relationships
+
+In practice, linear regression is seldom executed with only one variable; rather, it involves multiple variables. The purpose of incorporating multiple variables is not solely to comprehend the impact of one variable on another, but rather to "isolate" this effect by controlling for other independent variables that may also contribute to explaining the variance of the dependent variable. This concept is commonly known as *ceteris paribus*, signifying we keep all other factors at a constant level.
+
+In R, to perform linear regression while controlling for multiple independent variables, you can use the `lm()` function and specify the formula as follows: `lm(y ~ x + z + w, data)`. In this formula, y represents the dependent variable, while x, z, and w represent the independent variables you want to include in the model. The data argument is used to specify the dataset from which the variables are derived.
+
+To understand how to conduct multiple regression in R, we will analyze the European Social Survey. Our focus will be on exploring the gender gap in climate policy attitudes. Is there a gender difference in the way people support climate policies? Some literature [@bush2023facing] suggests this possibility, and we aim to verify it using European Social Survey data. Additionally, we will examine how this gender difference varies across the 23 countries in our dataset. Here, I use the 8th wave of the ESS, which contains variables related to climate policy support.
+
+```{r}
+# Import packages
+
+needs(tidyverse, janitor, labelled, broom, haven)
+
+# Import ess data
+
+ess <- haven::read_dta("data/ess8.dta")
+
+n_distinct(ess$cntry) # 23 different countries
+```
+
+## Exploring our dependent variables
+
+To evaluate the impact of gender on climate policy support, I utilize three variables from the dataset:
+
+-   `banhhap`: "Favor banning the sale of the least energy-efficient household appliances to mitigate climate change."
+-   `inctxff`: "Favor increasing taxes on fossil fuels to mitigate climate change."
+-   `sbsrnen`: "Favor subsidies for renewable energy to mitigate climate change."
+
+```{r}
+# A look at the variables labels
+
+ess |> 
+  select(banhhap, inctxff, sbsrnen) |> 
+  map(var_label)
+```
+
+The variables are coded on a scale of 1 to 5, where 1 signifies "Strongly in favor" and 5 denotes "Strongly against." Consequently, a higher value indicates stronger opposition to climate policies.
+
+```{r}
+# A look at the different categories
+
+ess |> 
+  select(banhhap, inctxff, sbsrnen) |>
+  map(val_labels)
+```
+
+Before starting, it's beneficial to examine the distribution of the variables. From the distribution, we observe distinct patterns of opposition to climate policies across the three variables. People tend to show more support for subsidies for renewable energy and the ban of the least energy-efficient household appliances. Support for increasing taxes on fossil fuels is the lowest and is more dispersed.
+
+```{r}
+# Create histogram for each of the variables
+
+ess |> 
+  select(banhhap, inctxff, sbsrnen) |> 
+  # Convert to long format
+  pivot_longer(everything(), names_to = "policy", values_to = "opposition") |> 
+  ggplot(aes(opposition)) + 
+  geom_bar() + 
+  facet_wrap(~policy) 
+```
+
+## Recoding the variable of interests
+
+Before conducting a regression analysis, it is necessary to recode the variables of interest. The primary independent variable is gender, and additional control variables that might influence climate policy support include left-right self-placement (`lrscale`), education (`eduyrs`), income (`hincfel`), age (`yrbrn`), and satisfaction with the economic situation (`stfeco`).
+
+### Gender
+
+```{r}
+ess |> 
+  count(gndr)
+
+ess <- ess |> 
+  mutate(gender = unlabelled(gndr) |> as_factor())
+
+ess |> 
+  count(gender)
+```
+
+### Left-right scale and satisfaction with the economy
+
+```{r}
+ess |> 
+  count(lrscale)
+
+ess |> 
+  count(stfeco)
+
+ess <- ess |> 
+  mutate(
+    left_right = case_when(
+      # when lrscale is NA, replace with the mean of the variable
+      is.na(lrscale) ~ mean(lrscale, na.rm = TRUE),
+      # otherwise, keep the value of the variable
+      .default = lrscale
+    ),
+    stfeco = case_when(
+      # when stfeco is NA, replace with the mean of the variable
+      is.na(stfeco) ~ mean(stfeco, na.rm = TRUE),
+      # otherwise, keep the value of the variable
+      .default = stfeco |> as.integer()
+    )
+  )
+
+ess |> 
+  count(left_right)
+```
+
+### Income, age and education
+
+```{r}
+ess |> 
+  count(eduyrs)
+
+ess |> 
+  count(hincfel)
+
+ess |> 
+  count(yrbrn)
+
+ess <- ess |> 
+  mutate(
+    # Transform year of birth into age
+    age = 2016 - yrbrn
+  )
+
+ess |> 
+  count(age)
+```
+
+### Index of political trust
+
+```{r}
+# Add index of political trust with PCA
+ess |> 
+  select(starts_with("trst")) |>
+  map(var_label)
+
+ess |> count(trstplt)
+pca_trust <- ess |> 
+  # Select main variables of political trust
+  select(trstprl, trstprt, trstplt) |> 
+  # Run PCA on them
+  FactoMineR::PCA(scale.unit = T) |> 
+  # Extract the coordinates of the different dimensions
+  pluck("ind", "coord") |> 
+  # Convert it into a tibble
+  as_tibble() |> 
+  # Keep only the first dimension
+  select(1) |> 
+  # Rename it to trust index
+  rename(trust_index = Dim.1) 
+
+cor(pca_trust$trust_index, ess$trstprt, use = "complete.obs")
+
+pca_trust
+
+ess <- bind_cols(ess, pca_trust) # Add the index to the dataset
+
+```
+
+## Fitting multiple linear regression models
+
+Since there are three dependent variables, a separate model is created for each using the `lm()` function to run a linear regression. The formula comprises the dependent variable followed by the independent variables. The dataset is specified as the second argument, and the results of each model are saved in separate objects.
+
+```{r}
+model1 <- lm(sbsrnen ~ gender + eduyrs + hincfel + left_right + age  + stfeco + trust_index, ess)
+
+model2 <- lm(inctxff ~ gender + eduyrs + hincfel + left_right  + age  + stfeco + trust_index, ess)
+
+model3 <- lm(banhhap~ gender + eduyrs  + left_right + hincfel + age  + stfeco + trust_index, ess)
+```
+
+### Regression tables
+
+One way to interpret and communicate regression results is through regression tables. In this case, the `stargazer` package is utilized to display the results of the three models. To explore all available options for customizing the regression table, refer to `?stargazer`. For printing in Quarto, include `#| output: asis` and `type = "html"`. To print in the console, change `type = "text"`.
+
+```{r}
+needs(stargazer)
+
+#| output: asis
+stargazer::stargazer(model1,  model2, model3,
+          title = "Model Results", 
+          align = TRUE, 
+          type = "text",
+          covariate.labels = c("Gender - Female", "Education")
+          )
+```
+
+### Coefficient plots
+
+Whean dealing with multiples variables and models, it is useful to plot the coefficients to compare them. Here, we will use the `broom` package to extract the coefficients of the models and plot them with `ggplot2`. To combine the outputs of the three models, the `map_df()` function is used to iterate over the list of models and bind the results into a single tibble.
+
+```{r}
+
+tidy(model1, conf.int = TRUE)
+
+
+models_coefficients <- map_df(list(model1, model2, model3), ~ tidy(.x, conf.int = T), .id = "model")
+
+
+models_coefficients |>
+  # Remove the intercept
+  filter(term  != "(Intercept)") |>
+  ggplot(aes(term, estimate, color = model)) +
+  # Add confidence intervals
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high), position = position_dodge(width = 0.5)) +
+  # Add a dashed line at 0 (0 means no effect)
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  # Rotate the labels on the x axis
+  coord_flip() +
+  # Add a title and change the labels
+  labs(x = "Coefficient", y = NULL, title = "Coefficients of the different models") +
+  theme_minimal() +
+  scale_color_manual(labels = c("Subsidies", "Tax", "Ban"), values = c("#00AFBB", "#E7B800", "#FC4E07"))
+```
+
+### Predicted values of the model
+
+An alternative way to interpret the results of a regression model is to plot the predicted values of the model. The predicted values are the values of the dependent variable that the model predicts for each value of the independent variable. while holding the other variables constant. This is done with the `ggeffects` package. The `ggpredict()` function is used to extract the predicted values of the model for each variable. The `plot()` function is then used to plot the results.
+
+```{r}
+needs(ggeffects)
+
+
+ggeffects::ggpredict(model2, terms = "gender") |> 
+  plot()
+  
+ ggeffects::ggpredict(model2, terms = "left_right") |> 
+  ggplot(aes(x, predicted)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2)
+
+ggeffects::ggpredict(model1, terms = "left_right") |> 
+  plot() +
+  ggtitle("Predicted values of oppose increase taxes on fossil fules") +
+  ylab("Predicted values")
+```
+
+### Interaction effects : ideology and gender
+
+Our initial models assess the effect of each variable while holding all other variables constant. However, it is conceivable that the effect of one variable depends on the values of others. This phenomenon is referred to as interaction effects, and it is necessary to explicitly specify these interactions in our regression models to evaluate their effects. Here, I am interested in the interaction between gender and left-right self-placement. To do so, I add the interaction term to the model with the `*` operator.
+
+```{r}
+ess |> 
+  group_by(gender) |> 
+  summarise(lrscale = mean(left_right, na.rm = T))
+```
+
+```{r}
+
+model4 <- lm(inctxff ~ gender*left_right + eduyrs + hincfel+ age  + stfeco + trust_index, ess)
+
+```
+
+The results of the model displayed in the regression table show that our interaction effect is statistically significant and negative and our gender coefficient is not significative anymore individually. This means that the effect of gender on the dependent variable depends on the value of left-right self-placement.
+
+```{r}
+stargazer::stargazer(model4, type = "text") # Regression table
+```
+
+To interpret the interaction effect, we can plot the predicted values of the dependent variables for each value of the independent variables. From this, we can interpret that men tend to oppose more climate policies than women but that this effect is not significant for people who place themselves on the left of the political spectrum. The gender gap starts to appear for people who place themselves in the center and is the most important for people who place themselves on the right of the political spectrum.
+
+```{r}
+# Predicted values
+
+ggeffects::ggpredict(model4, terms = c("left_right", "gender")) |> 
+  as_tibble() |> 
+  ggplot(aes(x, predicted, color = group)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2)
+```
+
+## Model diagnostics
+
+After fitting our model, it is crucial to conduct various diagnostics to assess the correctness of the specification and to ensure that we are not violating underlying assumptions made about the data in regression analysis. In this context, the `performance` package is employed to examine different aspects of these assumptions.
+
+```{r}
+needs(performance)
+```
+
+### Multicolinearity
+
+It is crucial to assess the correlation among predictors, as correlated predictors can capture similar phenomena, potentially leading to multicollinearity issues in regression analysis. To delve into this, the Variance Inflation Factor (VIF) serves as a key metric, quantifying the extent to which the variance of an estimated regression coefficient increases when predictors are correlated. Higher VIF values, typically considered problematic above 10, indicate more severe multicollinearity. Complementing VIF, the concept of tolerance, represented as 1/VIF, offers insight into the proportion of variance in a predictor not explained by other predictors. Tolerance values close to 1 signify low collinearity. If multicollinearity is identified, a practical approach for mitigation involves techniques like Principal Component Analysis (PCA). If it's useful to check for collinearity, be aware that the extent to which this is an important issue is open to debate. For instance, see the takes of [Paul Allison](https://statisticalhorizons.com/multicollinearity/) and [Richard McElreath](https://janhove.github.io/analysis/2019/09/11/collinearity).
+
+One way in R to check for multicolinearity is from the `check_collinearity()` function from the `performance` package (equivalent to the `car::vif` function). The functions calculate the VIF, give confidence interval and calculte tolerance.
+
+```{r}
+map(list(model1, model2, model3), check_collinearity)
+```
+
+## Heteroskedasticity
+
+Heteroskedasticity refers to the situation in regression analysis where the variability of the residuals (errors) is not constant across all levels of the independent variables. This violates one of the assumptions of classical linear regression, which assumes homoskedasticity, where the variance of the residuals is consistent.
+
+The presence of heteroskedasticity can affect the reliability of statistical inferences. Standard errors of coefficient estimates may be biased, leading to incorrect p-values and confidence intervals. To check for heteroskedasticity, a common approach is to use diagnostic plots, such as plotting residuals against fitted values. Another method is statistical tests, such as the Breusch-Pagan test, which formally assesses whether the variance of the residuals is constant. If the test indicates significant heteroskedasticity, model adjustments or transformations may be necessary to address this violation of assumption. It is also possible to use robust standard errors, which are less sensitive to heteroskedasticity.
+
+```{r}
+augment(model2) |>  
+  ggplot(aes(.fitted, .resid)) + 
+  geom_point()
+
+
+check_heteroscedasticity(model2) # Run a Breush-Pagan test
+```
+
+## Outliers
+
+To detect outliers, we use the cook distance which is an outlier detection methods. It estimate how much our regression coefficients change if we remove each observation.
+
+```{r}
+check_outliers(model1)
+```
+
+# Running many models with `purrr`
+
+Running a multiple linear regression model is great, but what about running dozens of regression models at the same time and comparing their results ? This is especially important when you want to run regression models across different subgroups or the same model on different dependent variables. In this section, I will show you how to use the `purrr` package to run multiple models at the same time and how to extract the results in a nice format. So far, I fitted my models on the whole dataset. However, it is possible that the effect of the independent variables on the dependent variable varies across countries. To check this, I will run a model for each country and see if the coefficients vary across countries.
+
+```{r}
+n_distinct(ess$cntry) # 23 different countries
+```
+
+```{r}
+ess_models <- ess |>
+  # Select variables of interest
+  select(cntry,
+         gender,
+         left_right,
+         hincfel,
+         age,
+         trust_index,
+         eduyrs,
+         inctxff,
+         banhhap,
+         sbsrnen, 
+         stfeco) |> 
+  # Pivot longer to have one column for the policy and one for the values for each respondent
+  pivot_longer(
+    cols = c(inctxff, banhhap, sbsrnen),
+    names_to = "policy",
+    values_to = "opposition")
+
+```
+
+```{r}
+ess_models <- ess_models |>
+  # Nest the data by country and policy
+  nest(data =  -c(cntry, policy))
+
+ess_models
+
+ess_models |> slice(1) |> unnest(data)
+
+ess_models1 <- ess_models |>
+  mutate(
+    # For each country-policy pairs, fit a model
+    model = map(
+      data,
+      ~ lm(opposition ~ gender + left_right + hincfel + age + eduyrs + stfeco + trust_index, .x)),
+    # Extract the coefficients of each model in a tidied column
+    tidied = map(model, ~ tidy(.x, conf.int = T)),
+    # Extract the R2 of each model in a glanced column
+    glanced =  map(model, glance),
+    # Extract the residuals of each model in a augmented column
+    augmented =  map(model, augment)
+  )
+
+ess_models1
+```
+
+### Create coefficient plots for every country and policy
+
+The coefficient plot will give us an estimate of the effect of gender of each of the three policy for each country. We can see that there is some heterogeneity and that the gender effect is not always significant.
+
+```{r}
+ess_models1 |> 
+  # Unnest the dataset
+  unnest(tidied) |>
+  # Filter to keep only the coefficient of interest
+  filter(term == "genderFemale") |> 
+  # Create a column to indicate if the coefficient is significant
+  mutate(significant = p.value < 0.05) |> 
+  # Create a coefficient plot for each country and policy
+  ggplot(aes(fct_reorder(cntry, estimate), estimate, color = significant)) + 
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high), position = position_dodge(width = 1)) +
+  coord_flip() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_light() +
+  labs(x = "Country") +
+  facet_wrap(~ policy) +
+  scale_colour_viridis_d()
+```
+
+If we look at the results of our estimate for the left-right variable, the results are even more clear. We tend to see a divide between eastern and western european countries.
+
+```{r}
+ess_models1 |>
+  unnest(tidied) |>
+  filter(term == "left_right") |>
+  mutate(
+    significant = p.value < 0.05,
+    policy = case_match(
+      policy,
+      "banhhap" ~ "Ban sale non efficient households",
+      "inctxff" ~ "Tax fossil fuels",
+      "sbsrnen" ~ "Subsidies renewable"
+    )
+  ) |>
+  ggplot(aes(fct_reorder(cntry, estimate), estimate, color = significant)) +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high), position = position_dodge(width = 1)) +
+  coord_flip() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_light() +
+  labs(x = "Country") +
+  scale_colour_viridis_d() +
+  facet_wrap( ~ policy)
+```
+
+### Comparing model fits across countries and policies
+
+```{r}
+ess_models1 |> 
+  unnest(glanced) |> 
+  ggplot(aes(fct_reorder(cntry, adj.r.squared), adj.r.squared)) + 
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ policy) + 
+  theme_minimal()
+```
+
+# References
