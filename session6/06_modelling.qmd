@@ -182,11 +182,15 @@ One way to interpret and communicate regression results is through regression ta
 ```{r}
 needs(stargazer)
 
+```
+
+```{r}
 #| output: asis
+
 stargazer::stargazer(model1,  model2, model3,
           title = "Model Results", 
           align = TRUE, 
-          type = "text",
+          type = "html",
           covariate.labels = c("Gender - Female", "Education")
           )
 ```
@@ -230,15 +234,6 @@ needs(ggeffects)
 ggeffects::ggpredict(model2, terms = "gender") |> 
   plot()
   
- ggeffects::ggpredict(model2, terms = "left_right") |> 
-  ggplot(aes(x, predicted)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2)
-
-ggeffects::ggpredict(model1, terms = "left_right") |> 
-  plot() +
-  ggtitle("Predicted values of oppose increase taxes on fossil fules") +
-  ylab("Predicted values")
 ```
 
 ### Interaction effects : ideology and gender

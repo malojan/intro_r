@@ -6,12 +6,6 @@ In this exercice, we are interested in the drivers of attitudes towards gays and
 
 1.  Import the European Social Survey 8th wave from the data folder
 
-```{r}
-needs(tidyverse, haven)
-
-ess <- read_dta("data/ess8.dta")
-```
-
 2.  Recode the variable `gndr` in order to have a factor variable with Male and Female rather than the values 1 and 2.
 
 3.  Look at the relationship between `hmsacld` and `lrscale` visually. Interpret the results
