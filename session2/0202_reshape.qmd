@@ -1,0 +1,114 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Reshaping data
+
+The analysis of your data is usually not the part of your project that takes longer : it is data wrangling. Your data have to be cleaned in order to be analyzed. This mean that you have a *tidy* datasets. Here we focus how we can combine and reshape different datasets in order to use them properly. I will use polling data of different political parties.
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse) # Load the tidyverse
+
+german_polls <- read_csv("data/german_polls.csv")
+```
+
+## Reshaping with `pivot_longer()` and `pivot_wider()`
+
+Datasets can be in long (many rows, few columns) or wide formats (few rows, many columns). Depending of what our unit of analysis is, we can reshape our datasets in different formats. In german_polls, the vote intentions of each party are stored in different columns. But we could also have a column with parties and a column with voting intention.
+
+```{r}
+(german_long <- german_polls |>
+  pivot_longer(
+    # Select which columns to pivot
+    cols = c(Union, FDP, LINKE, SPD, PIRATEN, AfD, GRUENE),
+    # Choose a name for the new column with all of the parties
+    names_to = "party",
+    # Choose a name for the new column with the vote intentions
+    values_to = "intention"
+  ))
+
+```
+
+```{r}
+german_long
+
+german_intentions <- german_long |> 
+  group_by(date, party) |> 
+  summarise(intention = mean(intention, na.rm = T))
+```
+
+We can also reshape the dataset to put it back on wide format.
+
+```{r warning=FALSE, message=FALSE}
+(german_wide <- german_long |> 
+  pivot_wider(
+    names_from = party,
+    values_from = intention
+  ) |> 
+  unnest())
+
+
+# How many times the Greens have been higher in the polls than SPD ? 
+german_wide |> 
+  mutate(left = GRUENE > SPD) |> 
+  count(left)
+```
+
+## Combining with bind_rows
+
+Now I want to combine this data from Germany with the same data from the spanish case.
+
+```{r warning= FALSE}
+spain_polls <- read_csv("data/spain_polls.csv")
+
+(spain_polls <- spain_polls |>
+  pivot_longer(
+    # Select which columns NOT to pivot
+    cols = -c(date, firm, date_from, sample_size),
+    # Choose a name for the new column with all of the parties
+    names_to = "party",
+    # Choose a name for the new column with the vote intentions
+    values_to = "intention"
+  ))
+
+
+```
+
+I also add a country variable to add information on the country of the two datasets.
+
+```{r}
+spain_long <- spain_polls |> mutate(country = "Spain")
+german_long <- german_long |> mutate(country = "Germany")
+
+```
+
+And combine the two with `bind_rows()`
+
+```{r}
+polls <- bind_rows(spain_long, german_long)
+```
+
+```{r warning=FALSE, message=FALSE}
+
+polls |> 
+  filter(party %in% c("AfD", "PP", "Union", "VOX")) |> 
+  ggplot(aes(date, intention, color = party, group = party)) +
+  geom_smooth(se = F) +
+  facet_wrap(~ country)
+```
+
+## Going further
+
+```{r}
+polls |> 
+  # Compute the mean of voting intention for each party/date
+  summarise(intention = mean(intention, na.rm = T), .by = c(country, date, party)) |> 
+  # Compute party ranking for each date
+  mutate(rank = row_number(-intention), .by = date) |>
+  # Keep only the party that leads the polls
+  filter(rank == 1) |> 
+  # Count how manu times each party arrived first
+  count(rank, party, sort = T)
+```
