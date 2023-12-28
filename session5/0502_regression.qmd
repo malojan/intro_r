@@ -1,0 +1,253 @@
+# Introduction to linear regression
+
+As you may have learned in your quantitative methods class, correlation often falls short, and linear regression is frequently employed. Linear regression is considered a workhorse in quantitative social sciences. It's safe to say that publishing quantitative results can be challenging without utilizing this or a more sophisticated model. Whether you're a quantitative researcher aiming to employ it or a qualitative researcher seeking to comprehend a quantitative article relevant to your work, understanding how regression operates is crucial.
+
+When dealing with a sole dependent variable, we refer to it as simple linear regression, which is our primary focus today. In the next session, we will delve into multiple linear regression, involving more than one independent variable.
+
+In linear regression, our objective is to establish a linear relationship between one or more independent variables and a *continuous* dependent variable. However, when working with a dependent variable that is not continuous, other models become relevant, and these will be explored in the upcoming semester. One such model is logistic regression, which is employed when the dependent variable is binary (e.g., whether individuals have voted for Trump or not).
+
+## Testing economic voting theory
+
+To understand how it works, I am using an example developed by François Briatte, the previous instructor of this course, which utilizes data from Larry Bartels on economic voting in the United States. Economic voting is a theory that suggests voters reward or punish the incumbent government based on the state of the economy. In this example, we will explore the relationship between changes in real disposable income in the last quarters before an election and the margin of victory for the incumbent party in the United States.
+
+Our question is then : Is there a relationship between the state of the economy (measured as the growth of real disponible income) and the margin of victory for the incumbent party in the United States? Our regression equation for each incumbent party is a given year ${i}$ is written below.
+
+$$
+margin_{i} = \beta_{0} + \beta_{1}income_{i} + \epsilon_{i}
+$$ The goal of the regression is to estimate the parameters of our model wich are $\beta_{0}$, $\beta_{1}$ and $\epsilon_{i}$.
+
+-   $\beta_{0}$ corresponds to the intercept of the regression line. It provides the estimated value of the margin of victory for the incumbent party when the growth of real disposable income is 0. This intercept may or may not have a meaningful interpretation depending on the context of your data.
+-   $\beta_{1}$ represents the slope of the regression line. It indicates the estimated change in the margin of victory for the incumbent party for a one-unit change in the growth of real disposable income. This coefficient is of particular interest as it demonstrates the strength and direction of the relationship between the two variables.
+-   $\epsilon_{i}$ is the error term
+
+To estimate the parameters of our model, we use the method of ordinary least squares (OLS). It allows to fit a line through the data points in a way that minimizes the sum of the squared prediction errors. In other words, it minimizes the distance between the line and the data points. This is why it is called "least squares". This might still sound abstract to you so let's look at the data ! I first import the data that is in two datasets that I am merging together.
+
+```{r}
+# Import the packages
+needs(tidyverse, broom, stargazer)
+
+# Import the two datasets
+bartels <-read_csv("data/bartels4812.csv")
+
+presidents <- read_csv("data/presidents4820.csv") |> 
+  rename(party_winning = party, 
+         president_elected = president) |> 
+  mutate(president_previous = lag(president_elected, default = "Truman"), 
+         party_previous = lag(party_winning, default = "Democrat"), 
+         party_incumbent = party_previous == party_winning,
+    incumbent = if_else(party_incumbent, president_elected, challenger))
+
+
+# Join them together
+elec <- left_join(bartels, presidents, by = "year") 
+
+```
+
+To explore the relationship between the two variables, we first draw a scatter plot. We see from this plot that there seems to be a linear relationship.
+
+```{r}
+(elec_plot <- elec |> 
+  ggplot(aes(inc1415, incm)) +
+   # Create a scatter plot
+  geom_point() +
+   # Add a line at 0 on the y-axis
+  geom_hline(yintercept = 0, lty = "dashed") +
+   # Add president names
+  ggrepel::geom_text_repel(aes(label = str_c(incumbent, "-", year))) +
+   # Change axix labels
+  labs(
+    y = "Incumbent party popular vote margin (%)",
+    x = "Q14/Q15 growth in real disposable income per capita (%)"
+  ) +
+  theme_minimal())
+```
+
+The goal of linear regression is to find the best-fitting straight line that represents the relationship between two variables based on the given data points. The "best fit" line is determined by minimizing the distance between the line and the actual data points. This distance is measured using residuals, which are the vertical distances from each data point to the line. The line that results in the smallest total residuals provides the best approximation of the relationship between the variables. For example, if we examine the plot below, we can observe that the red and blue lines do not fit the data points well, whereas the black line represents a better fit.
+
+```{r}
+#| warning: false
+#| message: false
+
+elec_plot  +
+  # One first "wrong" regression line
+  geom_abline(
+    intercept = -6,
+    slope = 10,
+    color = "blue",
+    linetype = "dashed",
+    size = 1,
+    alpha = 0.4
+  ) +
+  # A second "wrong" regression line
+  geom_abline(
+    intercept = 0,
+    slope = 1.5,
+    color = "red",
+    linetype = "dashed",
+    size = 1,
+    alpha = 0.4
+  ) +
+  # The true regression line
+  geom_smooth(
+    method = "lm",
+    linetype = "dashed",
+    color = "black",
+    se = FALSE,
+    size = 1,
+    alpha = 0.4
+  )
+```
+
+Linear regression not only provides us with the best-fitting line but also offers valuable information about the uncertainty associated with the estimated model parameters. This uncertainty is typically represented by confidence intervals around the regression line, which help us understand the range of possible values for the coefficients. Below, you can see this with the grey area around our regression line.
+
+```{r}
+#| warning: false
+#| message: false
+
+elec_plot +
+  geom_smooth(method = "lm", linetype = "dashed", color = "black", se = TRUE, size = 1, alpha = 0.4)
+```
+
+## Running a regression in R
+
+Now we have a better idea of what a regression is, let's run our first model. In R it is really easy to do ! You need to use the `stats::lm()` function. You need to insert a formula with on the left, the variable you want to explain and the right, the independent variables and in between, a `~`. Before running the model, we have to make sure to know whether we have missing values or not in our data because the model will just drop them out and it is better to be aware of this.
+
+```{r}
+model <- lm(elec$incm ~ elec$inc1415)
+
+model <- lm(incm ~ inc1415, data = elec)
+```
+
+To have a quick look at the results, you can use the `summary()` function. It provides you with the main results of the model.
+
+```{r}
+summary(model)
+```
+
+But be aware that thare are in fact many more results that you can access. You can use the `str()` function to see all the results that you can access.
+
+```{r}
+str(model)
+```
+
+## Extract and interpret the results
+
+Once we have run the model, we first to extract and interpret the results. In R, you have different ways to look at and to manipulate the results of a regression model. Let's look at them step by step.
+
+### Coefficients
+
+First, you have the coefficients of the model that we have estimated. You can access directly the coefficient using the `coef()` function. An alternative way to see the results comes from the `broom` package (that you need to install and to load) that has super handy functions to get the results of the regression model in tidy format. The `tidy()` function allows you to extract the coefficient of the models and to get their confidence intervals and p values.
+
+```{r}
+coef(model) # Extract the coefficients
+confint(model) # Extract the confidence intervals
+
+(tidied <- tidy(model, conf.int = TRUE)) 
+
+tidied |>  mutate(significant_05 = p.value <= 0.5)
+```
+
+-   Our estimate for the intercept - 0.873. This means that if the Q14/Q15 growth in real disposable income per capita is 0, the incumbent party popular vote margin is -0.873. This means that on average, the incumbent party is losing the election when there is no economic growth.
+
+-   Our estimate for for our first coefficient is 3.67. This is the slope of the regression line. That means that for each percentage point increase in growth in real disposable income per capita, the incumbent party popular vote margin increases by 3.67 percentage points.
+
+-   *statistic* is the t.test. It is computed by dividing the coefficient by its standard error (`3.67/1.61 = 2.28`). The t.test is a measure of how many standard errors the coefficient is away from 0. If the t.test is `>=` 1.96, the coefficient will by statistically significant at the 5% level.
+
+-   p.value :`2 * (1 - pt(abs(2.28), 15))`, df being the degree of freddom which our number of observations - our number of coefficients (17-2)
+
+-   Looking at the p-value, we see that the p-value of our main esimate is inferior to 0.05, showing that it is stastically significant for this level of confidence.
+
+You can also use the output of `tidy()` to create coefficient plots. This is especially useful when you have many coefficients, and you want to quickly see which ones are significant or not. If the confidence interval bar crosses the dashed 0 line, it indicates that our coefficient will not be statistically significant. Remember that the sizes of coefficients are not directly comparable because they are not calculated on the same scale. The magnitude of each coefficient depends on the units of the corresponding independent variable. Therefore, comparing coefficients without considering their scales could lead to misleading interpretations. If you are lazy, you can use like [`coeffpot`](https://lrberge.github.io/fixest/reference/coefplot.html), [`dotwhisker`](https://cran.r-project.org/web/packages/dotwhisker/vignettes/dotwhisker-vignette.html), [`ggstat`](https://larmarange.github.io/ggstats/reference/ggcoef_model.html) to create these plots. However, I personally favor creating them manually because it offers much more flexibility.
+
+```{r}
+tidied |>
+  ggplot(aes(x = term, y = estimate)) +
+  # Create dot for our estimates with a bar for confidence intervals
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high))  +
+  # Create a dashed line at 0
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip() + # invert y/x axes
+  theme_minimal()
+```
+
+### Model fit
+
+When we run a regression, we also care about how good is our model to explain the variation of our outcome variable. The $R^{2}$ is the amount of variation of our dependent variable that our model is able to explain. It goes from 0 to 1. If the $R^{2}$ = 1, our model entirely explains Y (that will never happens). In social sciences we are happy with $R^{2}$ of 0.2...
+
+```{r}
+broom::glance(model)
+```
+
+One last useful function from the `broom` package is `augment()`. This will give you the predictions of our model (our fitted values) and our residuals (the errors). This is useful to calculate different diagnostics that we will see in a further session.
+
+```{r}
+augment(model)
+```
+
+`augment()` is also useful to combine your regression results with your initial dataframe and do some graphs of your results.
+
+```{r}
+#| warning: false
+  
+model |>
+  augment(elec) |>
+  ggplot(aes(x = inc1415, y = incm, label = incumbent)) +
+  geom_point(colour = "black", alpha = .25) +
+  geom_smooth(method = "lm",
+              color = "black",
+              linetype = "dashed")  +
+  geom_segment(aes(xend = inc1415, yend = .fitted),
+               alpha = 0.5,
+               color = "blue") +
+  ggrepel::geom_text_repel() +
+  theme_minimal()
+```
+
+The blue segments on the plot are the so-called residuals. These are the vertical distance between the 'true' value of our data to their fitted values on the regression line. The model is fitted by trying to minimize the sum of all of this distances.With this visualization, we can alo say something about how our model is doing to predict certain points. For instance, our model is doing a bad job at predicting the margins of victory of Einseihowever.
+
+### A note on categorical variables
+
+We have seen that we can use continuous variables in our regression. But we can also use categorical variables. For instance, we can use the `party_previous` variable to understand the effect of being from one party or another on the margin of incumbent. Categorical variables have to be interepreted differently than continuous variables. The coefficient of a categorical variable is the difference between the mean of the outcome variable for the group of interest and the mean of the outcome variable for the reference group. Here, the reference group is Democrat. The coefficient of the party variable is the difference between the mean of the outcome variable for Republican and the mean of the outcome variable for Democrat. Here, our coefficient is 3.436 meaning that being from the Republican Party increases the margin of incumbent by 3.436 percentage points compared to being from the Democrat Party. However, our results are not statistically significant. Consequently, we cannot conclude that being from the Republican Party increases the margin of incumbent.
+
+```{r}
+model2 <- lm(incm ~ party_previous, elec)
+
+summary(model2)
+tidy(model2, conf.int = T)
+```
+
+So far, we have tested the effect of two variables in two different models. However, we can also test the effect of two variables in a multiple linear regression model that allows us to control for the effect of other variables.
+
+```{r}
+model3 <- lm(incm ~ inc1415 + party_previous, elec)
+
+summary(model3)
+```
+
+We can also compare the fit our two models with `glance()` using the map_df function from the `purrr` package that is useful to apply a same function to different element of a list and return a tibble.
+
+```{r}
+glance(model)
+glance(model2)
+glance(model3)
+
+map_df(list(model, model2, model3), glance, .id =  'model')
+```
+
+We can see that while our first model with the disposable income is doing a good job at explaining the variation of our outcome variable, our second model with the party variable is really bad. This is because the party variable is not a good predictor of the margin of incumbent. This is why we have a low $R^{2}$.
+
+Lastly, we can also look at our results in a regression table with the `stargazer` package.
+
+```{r}
+stargazer::stargazer(
+  model,
+  model2,
+  model3,
+  type = "text",
+  title = "Economic voting : regression table",
+  digits = 2,
+  omit.stat = "f",
+  dep.var.labels = "Margin of incumbent",
+  covariate.labels = c("Disposable Income", "Incumbent Party - Republican", "Intercept")
+)
+```

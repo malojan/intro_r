@@ -1,0 +1,194 @@
+# Correlation
+
+Todays focus is on measuring the relationship between two continuous variables. To do so, we will first look at how to do correlations. Then, we will look at how to perform linear regression.
+
+## A brief reminder on correlation
+
+A correlation is a statistical measure that expresses the extent to which two variables are linearly related. A correlation coefficient measures the strength and direction of a linear relationship between two variables. It quantifies how changes in one variable correspond to changes in another variable. The correlation coefficient ranges between -1 and 1, where -1 indicates a perfect negative linear relationship, 1 indicates a perfect positive linear relationship, and 0 indicates no linear relationship.
+
+$$
+r = \frac{\sum{(x_i - \bar{x})(y_i - \bar{y})}}{\sqrt{\sum{(x_i - \bar{x})^2} \sum{(y_i - \bar{y})^2}}}\
+$$
+
+Correlations coefficients give you a indicator of the intensity of the relationships between two continuous variables.
+
+## Performing correlations in R
+
+To explore correlations, we will work on affective polarization in France. Affective polarization is a really trendy topic in political science. The concept relates to how much people of some (political) groups tend to like or dislike each other. Here, we will use data from the french electoral study conducted during the campaing of the last presidential election and asking to each respondent to what extent they have sympathy for the people who vote for each party. We want to look at which groups of party supporters tend to be liked or dislike together.
+
+```{r}
+needs(tidyverse, haven, corrr, broom)
+
+fes2022 <- read_dta("data/fes2022v3.dta")
+
+fes2022 |> count(fes3_QA07_A)
+fes2022$fes3_QA07_A
+```
+
+The information we are interested in is contained in the variables from `fes3_QA07_A` to `fes3_QA07_G.` These variables contain the responses of the participants to the question, 'On a scale from 0 to 10, how much sympathy do you have for people who vote for \[PARTY NAME\]?' We have variables for 6 different parties: LFI, EELV, PS, LREM, LR, RN, and REC. The responses are coded from 0 to 10, with 0 indicating 'no sympathy at all' and 10 indicating 'a lot of sympathy.' We will first rename and recode these variables to make them more user-friendly.
+
+```{r}
+fes2022 <- fes2022 |>
+  # Rename each variabe by prefix symp_ + party name
+  rename(
+    symp_fi = fes3_QA07_A,
+    symp_eelv = fes3_QA07_B,
+    symp_ps = fes3_QA07_C,
+    symp_lrem = fes3_QA07_D,
+    symp_lr = fes3_QA07_E,
+    symp_rn = fes3_QA07_F,
+    symp_re = fes3_QA07_G
+  ) |>
+  # Recode the 7 variables at once by replacing missing values with 5
+  mutate_at(
+    # Specify which variables we want to change : those starting with "symp"
+    vars(starts_with("symp")), 
+    # For each of those variable, when a value is between 0 and 10, keep it, otherwise replace it with 5
+    ~ case_when(.x %in% c(0:10) ~ .x, .default = 5))
+
+fes2022 |> 
+  count(symp_eelv)
+```
+
+Now, we do not have any missing values in all of those variables. We will start by looking at the relationship between sympathy for LFI and sympathy for LREM. We will use the `cor()` function to compute the correlation between the two variables. Note that in the case we have missing values in our data, the `cor` function will not work. In that case, you can add `use = "complete.obs"` as argument in the `cor()`function.
+
+Here we see that the relationship is negative, meaning that people who have sympathy for LFI tend to have less sympathy for LREM.
+
+```{r}
+# Standard way to compute a correlation in R
+
+cor(fes2022$symp_fi, fes2022$symp_lrem)
+
+```
+
+We will also use the `cor.test()` function to test whether the correlation is statistically significant.
+
+```{r}
+(affect_test <- cor.test(fes2022$symp_fi, fes2022$symp_lrem))
+```
+
+We can also have a look a the tidy output of the correlation test.
+
+```{r}
+tidy(affect_test)
+```
+
+When looking at relationships between variables, it is always a good idea to visualize the data. Here, we will use a scatterplot to visualize the relationship between sympathy for LFI and sympathy for LREM. We will use the `ggplot2` package to do so.
+
+```{r}
+#| message: false
+
+fes2022 |> 
+  ggplot(aes(symp_fi, symp_lrem)) + 
+  geom_point() +
+  geom_smooth()
+```
+
+### Multiple correlation with the `corrr` package
+
+Sometimes, we are not interested in the correlation of two variables but of many at the same time. To do this, we compute correlation matrices, which can be done with the `cor()` function that we have seen above. But, the `corrr` package comes with super handy functions to obtain, manipulate and visualize the results of correlations. You will need first to install the package and load it.
+
+I first create a subset of my dataset with only the variables measuring affective polarization towards different groups of voters.
+
+```{r}
+(fes_affect <- fes2022 |> 
+   select(starts_with("symp")))
+
+
+```
+
+And then, I use the `corrr::correlate()` function to compute the correlation matrix. This contains the correlation between each pair of variables.
+
+```{r}
+(affect_matrix <- fes_affect |> 
+    corrr::correlate())
+```
+
+To make this more readable, we can also use the following to get the variables that are the most correlated with each others.
+
+```{r}
+(affect_df <- affect_matrix |>
+  # Keep only the upper triangle of the matrix
+  shave() |>
+  # Transform the matrix into a dataframe of 3 columns : var1, var2, correlation
+  stretch(na.rm = T))
+
+affect_df
+```
+
+We see for instance here that the variables measuring affective polarization towards the RN and Reconquête are the most positively correlated. This means that people having sympathy for people voting for one of this party tend to have sympathy for people voting for the other party.
+
+```{r}
+affect_df |> 
+    # Order the dataframe by correlation from 1 to -1
+  arrange(-r)
+```
+
+On the other hand, we see that the variables measuring affective polarization towards the PS and the RN are the most negatively correlated. This means that people having sympathy for people voting for one of this party tend to have antipathy for people voting for the other party. However, the relationship is not as strong as the one between the RN and Reconquête.
+
+```{r}
+affect_df |>
+    # Order the dataframe by correlation from - 1 to 1
+  arrange(r)
+```
+
+Calculating a correlation test for each pairwise correlation is a bit trickier but here an example of how you could proceed. We create first a function that will calculate a test between two variables and then we use the `colpair_map()` function on our dataset to calculate all the tests. We then filter the results to keep only the non-significant results.
+
+```{r}
+# Create function to calculate a correlation test between two variables and extract the p-value
+calc_cor_test <- function(var_1, var_2) {
+  cor.test(var_1, var_2)$p.value
+}
+
+
+cor.test(fes2022$symp_eelv, fes2022$symp_fi)
+
+# For each pair of variables, calculate the correlation test
+
+(tests <- colpair_map(fes_affect, calc_cor_test))
+
+
+tests |> 
+  # Keep only the upper triangle of the matrix
+  shave() |> 
+  # Transform the matrix into a dataframe of 3 columns : var1, var2, correlation
+  stretch(na.rm = T) |> 
+  # Add a column with a TRUE/FALSE value depending on whether the p-value is below 0.05
+  mutate(significant = r < 0.05) |>
+  # Keep only the non-significant results
+  filter(significant == FALSE)
+```
+
+The only correlation that is not significant in our test is between the socialist party and republican. That means that there is no significant relationship between how people like or dislike those who vote for the Republicans and for the socialist party.
+
+We can also visualize the correlations either with a heatmap or with a network plot.
+
+```{r}
+# Heatmap
+affect_matrix |> 
+  autoplot()
+
+# Network plot
+affect_matrix |> 
+  network_plot(0.1)
+```
+
+## A short introduction to PCA
+
+Measuring the correlation of multiples variables is useful when we want to reduce the number of variables in our dataset and find out which variables are the most correlated with each others. To do so, we can use a technique called Principal Component Analysis (PCA) which is a dimensionality reduction technique. Basically, it allows us to reduce the number of variables in our dataset by creating new variables that are linear combinations of the original variables. The new variables are called principal components. The first principal component is the one that explains the most variance in the data. The second principal component is the one that explains the second most variance in the data, and so on. I am not going to go into the details of how PCA works but if you want to learn more about it, you can check out this [video](https://www.youtube.com/watch?v=_UVHneBUBW0) or this [article](https://towardsdatascience.com/a-one-stop-shop-for-principal-component-analysis-5582fb7e0a9c). Here, I just show you an exemple of a PCA on all of our variables measuring affective polarization.
+
+```{r}
+# Install/Load the two packages I will use for the PCA
+needs(FactoMineR, factoextra)
+
+pca_fes <- fes2022 |> 
+  # Select only the variables measuring affective polarization
+  select(starts_with("symp")) |> 
+  # Perform the PCA
+  PCA()
+
+# Visualize both the variables and the individuals on the first two principal components  
+
+fviz_pca_biplot(pca_fes, label = "var", 
+               ggtheme = theme_minimal())
+```

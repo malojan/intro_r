@@ -1,0 +1,23 @@
+---
+title: "Exercice 5"
+---
+
+In this exercice, we are interested in the drivers of attitudes towards gays and lesbian rights in Europe. For this, you will use the European Social Survey 9th wave. The data is available in the data folder. The dataset contains a variable `hmsacld` that measures to what extent respondents agreen with gays and lesbian couples right to adopt children. Further information about the variables can be found in the codebook.
+
+1.  Import the European Social Survey 8th wave from the data folder
+
+```{r}
+needs(tidyverse, haven)
+
+ess <- read_dta("data/ess8.dta")
+```
+
+2.  Recode the variable `gndr` in order to have a factor variable with Male and Female rather than the values 1 and 2.
+
+3.  Look at the relationship between `hmsacld` and `lrscale` visually. Interpret the results
+
+4.  Look at the relationship between `hmsacld` and `gndr` visually. Interpret the results.
+
+5.  Estimate two linear models to predict `hmsacld` using `lrscale` and `gndr` respectively. Interpret the strength, direction and significance of the relationship between the predictors and the outcome variable.
+
+6.  Compare the variance explained by the two models.
