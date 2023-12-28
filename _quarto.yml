@@ -21,11 +21,27 @@ book:
         - session1/0104_basics.qmd
         - session1/0105_import.qmd
         - session1/0106_help.qmd
+        - session1/0107_exercise.qmd
     - part : "Session 2 : Manipulating data"
+      chapters:
+        - session2/0201_manipulate.qmd
+        - session2/0202_reshape.qmd
+        - session2/0203_exercise.qmd
     - part : "Session 3 : Data visualization"
+      chapters:
+        - session3/03_dataviz.qmd
+        - session3/exo_3.qmd
     - part : "Session 4 : Testing relationships"
-    - part : "Session 5 : Cleaning data"
+      chapters:
+        - session4/04_relationships.qmd
+    - part : "Session 5 : Correlation and regression"
+      chapters:
+        - session5/0501_correlation.qmd
+        - session5/0502_regression.qmd
+        - session5/exercice_5.qmd
     - part : "Session 6 : Multivariate analysis"
+      chapters:
+        - session6/06_modelling.qmd
 
   appendices: 
     - appendices/functions.qmd
