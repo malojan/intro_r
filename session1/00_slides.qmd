@@ -12,9 +12,6 @@ self-contained: true
 -   Why are we doing this
 -   R basics
 
-
-
-
 ## About Your Instructor {.smaller}
 
 -   Malo Jan, PhD candidate in Political Science at CEE Sciences Po

@@ -55,7 +55,9 @@ There are different functions to import data into R.
 All these functions enable you to read a file by specifying its path or its URL on the web. Here, for example, I've read the file containing "data science" Google Trends data, from which I generated the plot I showed you earlier.
 
 ```{r}
-ggtrend <- readr::read_csv("data/ggtrend_datascience.csv")
+library(tidyverse)
+
+ggtrend <- read_csv("data/ggtrend_datascience.csv")
 ggtrend
 ```
 
@@ -64,5 +66,5 @@ ggtrend
 Typically, we might want to save data to our disk after adding information, merging different datasets, and so on. This is useful for later reuse or to share the data with someone else. To achieve this, simply replace 'read' with 'write' in all the functions I've introduced previously. You'll also need to specify the name of the R object containing your data and the path where you wish to export the data.
 
 ```{r}
-readr::write_csv(ggtrend, "data/ggtrend_datascience.csv")
+write_csv(ggtrend, "data/ggtrend_datascience2.csv")
 ```

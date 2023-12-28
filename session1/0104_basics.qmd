@@ -17,6 +17,9 @@ First of all, R is a fancy calculator that can be used to perform fundamental ar
 2/6 # Division
 2^2 # Exponentiation
 (2+2)-(4*4)/2^2 # Mix of operations
+
+my_object <- 2
+my_object
 ```
 
 ## Objects
@@ -35,6 +38,15 @@ majority- right_seats
 
 After executing these lines, the distinct objects are preserved within the environment pane located in the upper-right section of RStudio.
 
+```{r}
+psoe_seats <- 121
+sumar_seats <- 31
+left_seats <- psoe_seats + sumar_seats
+majority - left_seats
+
+```
+
+
 ::: callout-note
 ## Exercise
 
@@ -45,8 +57,6 @@ Try to do the same with the two main left-wing parties PSOE and Sumar who respec
 <summary>Solution. Click to expand!</summary>
 
 Solution:
-
-
 
 </details>
 :::
@@ -64,7 +74,6 @@ The objects we used so far contained only one numeric value. However, what we mo
 We can generate vectors with `c()` which stands for "concatenate".
 
 ```{r}
-left_seats <- 121 + 31
 coalition_seats <- c(right_seats, left_seats)
 coalition_seats
 ```
@@ -73,6 +82,7 @@ We can also store vectors as objects and do operations on them.
 
 ```{r}
 majority - coalition_seats
+
 ```
 
 ### Characters vectors
@@ -102,8 +112,13 @@ c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE)
 These logical vectors are useful when we want to evaluate whether a condition is True or not. For instance, we could check whether each value of the`left_candidates` is equal to "Abascal". Or check whether the PP obtained more seats than Vox.
 
 ```{r}
-left_candidates == "Abascal"
-pp_seats > vox_seats
+left_candidates
+left_candidates == "Diaz"
+
+pp_seats
+vox_seats
+
+pp_seats < vox_seats
 ```
 
 ### Indexing
@@ -111,13 +126,16 @@ pp_seats > vox_seats
 When we manipulate vectors, we often want to access specific elements of them, which we call **indexing**, which is performed by using square brackets `[]`. You can index either by position or by name. When I write `candidates[3]`, I want the value of the third element of the `candidates vector`, this is indexing by position. But when I write `candidates[candidates == "Abascal"]`, I index by name because I want the elements that have Abascal as value.
 
 ```{r}
-candidates[3] # Get the third element of the vector
+candidates
+
+candidates[4] # Get the third element of the vector
 candidates[-3] # Get everything but the third element of the vector
 candidates[c(1,4)] # Get the first and the fifth elements of the vector
 candidates[1:3] # Get elements from the first to the third
 candidates[candidates == "Abascal"] # Which has Abascal as value
 candidates[candidates != "Abascal"] # Which has not Abascal as value
 candidates[candidates %in% c("Abascal", "Feijoo")]# Which has Abascal or Feijoo
+
 ```
 
 ## Functions
@@ -127,6 +145,8 @@ To manipulate vectors and conduct operations on them, we use *functions*. A func
 ```{r}
 vox_regions <- c(9, 1, 1, 1, 0, 1, 1, 1, 3, 2, 0, 1, 0, 0, 5, 2, 0, 5) 
 mean(vox_regions)
+
+mean_vox <- mean(vox_regions)
 ```
 
 In R, functions often expect inputs of specific types. If you pass a character vector containing numeric numbers as strings to a function that expects a numeric vector, it may not behave as expected. As shown below, the function returns a `NA` which means Not available/applicable.
@@ -175,6 +195,7 @@ In R, a missing value is represented by the symbol `NA`, which stands for "Not A
 
 ```{r}
 vox_regions <- c(vox_regions, NA)
+vox_regions
 ```
 
 When analyzing data, it's not uncommon to encounter NA values, and it's important to be aware of them. To check if a vector contains NA values, you can use the `is.na()` function. This function returns a logical vector indicating whether each value is NA (`TRUE`) or not (`FALSE`).
@@ -201,7 +222,9 @@ The functions we've discussed so far, such as `sum()` and `mean()`, come from ba
 
 To install a package in R, you can use the `install.packages()` function, passing the name of the package in quotation marks (either single or double). I recommend doing this installation in the console since you don't need to save this step; it's a one-time action. However, every time you start your script or Quarto document, you'll need to load the package. To do this, use the `library()` function, providing the package name as an argument, but without the quotation marks.
 
+
 ```{r}
+
 library(tidyverse)
 ```
 
@@ -210,7 +233,7 @@ The `tidyverse` isn't just a single package but rather a meta-package, meaning i
 ```{r}
 str_to_lower(candidates) # Change strings to lower class
 str_to_upper(candidates) # Change strings to upper class
-str_detect(candidates, "S") # Detect if strings that contains a "M"
+str_detect(candidates, "inflation") # Detect if strings that contains a "M"
 ```
 
 We can also combine characters vectors together with `str_c()`.
@@ -230,6 +253,7 @@ However, we primarily interact with vectors through the manipulation of datafram
 To understand what dataframes look like, let us continue with the results of the spanish elections. I manually create a tibble with the `tibble()` function with different variables about different parties, their seats, their vote share and their candidate.
 
 ```{r}
+
 elec <- tibble(
   party = c("PP", "PSOE", "Vox", "Sumar"), 
   seats = c(137, 131, 33, 31),
@@ -257,8 +281,8 @@ elec[4, 1] # get the value of the row 4, column 1
 Different functions are availble to get an idea of the informations and shape of the dataframe, which are useful when we load an unknown dataset and we want to understand its structure, what are the observations and variables.
 
 ```{r}
-head(elec, 2) # Return x first rows of an object
-tail(elec, 4) # Return x last rows of an object
+head(elec, 1) # Return x first rows of an object
+tail(elec, 2) # Return x last rows of an object
 dplyr::glimpse(elec) # Get a glimpse of your data
 colnames(elec) # Retrieve column names of the dataframe
 nrow(elec) # Return the number of rows present in the dataframe
@@ -270,6 +294,7 @@ You can also create new variables based on the existing ones. Here I create a ne
 
 ```{r}
 elec$seats_share <- elec$seats/350*100
+
 elec$disproportionality <- elec$vote_share - elec$seats_share
 elec
 ```
