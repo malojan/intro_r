@@ -1,0 +1,82 @@
+---
+title: "Introduction to data visualization"
+author: "Malo Jan"
+incremental: true
+format: revealjs
+self-contained: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Why data visualization ?
+
+1.  Exploration and description
+2.  Communication
+3.  Aesthetics
+
+## What makes a bad visualization ?
+
+1.  Perceptual (bad)
+2.  Substantive (wrong)
+3.  Aesthetics (ugly)
+
+## Ugly charts
+
+![](figures/ugly.png){fig-align="center"}
+
+## Wrong charts
+
+![](figures/wrong.png){fig-align="center"}
+
+## Forget about pie charts (the so-called "camemberts") {.smaller}
+
+-   One of the first graphs that comes in our mind when we think about dataviz
+-   If you have already done that once, it will not happen again
+-   We want to understand relative sizes but humans are bad at judging angles
+-   Use barcharts instead : humans are better at judging bar lengths (William Cleveland)
+
+## Bar charts instead of pie charts
+
+::: {layout-nrow="2"}
+![](figures/pie_chart.png){width="600" fig-align="center"}
+
+![](figures/bar_chart.png){width="600" fig-align="center"}
+:::
+
+## Forget about double axis
+
+::: {layout-ncol="2"}
+### 
+
+-   Misleading
+-   Difficult to read
+-   Use several graphs/facets instead
+
+### 
+
+![](https://blog.datawrapper.de/wp-content/uploads/2020/08/full-180508_index11.png){fig-align="center"}
+:::
+
+## Many more caveats
+
+-   Colors that communicates nothing
+-   Cutting Y axis
+-   More caveats [here](https://www.data-to-viz.com/caveats.html)
+
+# The grammar of graphics
+
+## Plotting systems in R
+
+-   Base R and functions such as `plot()`, `hist()`, `boxplot()`
+-   `lattice` package
+-   The gramar of graphics of `ggplot()`
+
+## Visualization with ggplot() {.smaller}
+
+-   Graphs are built by adding various layers allowing to make progressively more complex visualizations
+-   Three main layers in a ggplot graph :
+    -   data in a tidy format
+    -   aesthetics : what are the values that we want to map on the x and y axis, with wich color/shape/size
+    -   geom : the geometry allows you to specify how you want to represent your data
+-   Other layers possible : facets, stats, coordinates, themes, statistics...
+-   Each of those can be add with a `+`

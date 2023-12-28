@@ -1,0 +1,11 @@
+# Exercise 3 : Data visualization
+
+1.  Download and import the [Chapell Hill Expert Survey trend file](https://www.chesdata.eu/ches-europe) into Rstudio
+
+2.  Explore the codebook to see the variables available in this dataset and choose one of your interest.
+
+3.  Using graphs, provide a brief analysis of how political parties differ on this issue (across families or over time for instance). You should find a way to use at least the following geoms : `geom_bar()`, `geom_point()`, `geom_boxplot()` and facetting with `facet_wrap(~ )`
+
+4.  Polish your graphs : add titles, modify the axis labels, choose a theme : make them beautiful !
+
+5.  Combine both your code and your analysis in a quarto document, render it in pdf and upload it on moodle.
